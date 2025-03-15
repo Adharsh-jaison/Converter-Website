@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Timezone Converter</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4cc9f0;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    --hover-shadow: 0 12px 30px rgba(67, 97, 238, 0.15);
+    --transition: all 0.3s ease;
+}
+
+body {
+    background: var(--light-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    width: 100%;
+    height: 70px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+
+
+
+    display: flex;
+            /* justify-content: space-between;
+            align-items: center;
+            
+            padding: 1rem 2rem;
+            
+            position: sticky;
+            top: 0;
+            z-index: 1000; */
+}
+
+.nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #5f6368;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: #4285F4;
+        }
+        
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo i {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 20px;
+    color: var(--primary-color);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 16px;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--primary-color);
+    transition: var(--transition);
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 345px;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 0 20px 20px 0;
+    box-shadow: var(--card-shadow);
+    position: fixed;
+    top: 70px;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    transition: var(--transition);
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.clock-container {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    color: white;
+    margin: 10px 0 20px;
+}
+.clock-container1 {
+    /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); */
+    border: 1px solid;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    /* box-shadow: var(--card-shadow); */
+    /* color: white; */
+    margin: 10px 0 20px;
+}
+
+.clock {
+    font-size: 36px;
+    font-weight: 600;
+    margin: 10px 0;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.date-display {
+    font-size: 14px;
+    margin-top: 5px;
+    opacity: 0.9;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 12px 45px 12px 20px;
+    font-size: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 30px;
+    outline: none;
+    background: white;
+    transition: var(--transition);
+}
+
+.search-bar:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+}
+
+.search-suggestions {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.suggestion {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion:last-child {
+    border-bottom: none;
+}
+
+.suggestion:hover, .suggestion.active {
+    background: #f5f7ff;
+    color: var(--primary-color);
+}
+
+.calendar-container {
+    margin: 20px 0;
+}
+
+.calendar-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.calendar {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--transition);
+}
+
+.calendar:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.date-info {
+    background: #f5f7ff;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--text-color);
+    text-align: center;
+    margin-top: 10px;
+}
+
+.sidebar-section {
+    margin: 25px 0;
+}
+
+.sidebar-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 320px;
+    padding: 90px 30px 30px;
+    transition: var(--transition);
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border-radius: 15px;
+    padding: 20px 25px;
+    margin: 20px 0 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.time-input {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: var(--transition);
+    background: white;
+}
+
+.time-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    background: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+    background: #f5f7ff;
+}
+
+.add-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    box-shadow: 0 3px 10px rgba(67, 97, 238, 0.3);
+}
+
+.add-btn:hover {
+    transform: rotate(90deg) scale(1.1);
+    background: var(--secondary-color);
+}
+/* Intro Text Animation */
+.intro-text {
+    transition: opacity 0.5s ease, height 0.5s ease, padding 0.5s ease, margin 0.5s ease;
+    overflow: hidden;
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    margin: 30px 0;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.intro-text.hidden {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.intro-text h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.intro-text p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.intro-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.locations-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.location-card {
+    padding: 50px 25px;
+
+    flex-wrap: wrap;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    transition: var(--transition);
+}
+
+.location-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.location-icon {
+    font-size: 22px;
+    color: var(--primary-color);
+}
+
+.location-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.location-time {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+
+
+
+/* Country Cards */
+/* Country Cards Container */
+#countries-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Country Card Styling */
+.country-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    width: calc(33.33% - 20px); /* Adjust width for 3 cards per row */
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.country-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+/* Card Header */
+.city-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Card Body */
+.converted-details {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+.converted-details strong {
+    color: var(--primary-color);
+}
+
+/* Remove Button */
+.remove-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 3px 6px rgba(255, 107, 107, 0.2);
+    position: absolute;
+    bottom: 15px;
+}
+
+.remove-btn:hover {
+    background: linear-gradient(135deg, #ff5252, #ff6b6b);
+    transform: scale(1.05);
+    box-shadow: 0 5px 10px rgba(255, 107, 107, 0.3);
+}
+
+/* Card Background Decoration */
+.country-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .country-card {
+        width: calc(50% - 20px); /* 2 cards per row on tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .country-card {
+        width: 100%; /* 1 card per row on mobile */
+    }
+}
+/* Info Cards */
+.features-title {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    margin: 40px 0 20px;
+    color: var(--primary-color);
+}
+
+.features-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    width: 300px;
+    background: var(--card-bg);
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    transition: var(--transition);
+    border-top: 5px solid var(--primary-color);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--hover-shadow);
+}
+
+.feature-icon {
+    font-size: 40px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.feature-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+.feature-description {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.7;
+}
+
+/* Footer */
+footer {
+    background: var(--card-bg);
+    padding: 30px;
+    margin-top: 60px;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 20px 20px 0 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+.footer-logo i {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-right: 10px;
+}
+
+.footer-logo-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.footer-links {
+    display: flex;
+    gap: 25px;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #666;
+    font-size: 15px;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f5f7ff;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.social-icons a:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.copyright {
+    width: 100%;
+    text-align: center;
+    margin-top: 25px;
+    color: #888;
+    font-size: 14px;
+}
+#profile {
+    display: none; /* Hide the Sign Out button by default */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 280px;
+    }
+    .main-content {
+        margin-left: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        position: static;
+        border-radius: 0 0 20px 20px;
+        margin-top: 70px;
+        padding-top: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding-top: 20px;
+    }
+
+    .top-controls {
+        flex-direction: column;
+    }
+
+    .control-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .feature-card {
+        width: 100%;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .footer-logo {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0 15px;
+    }
+    
+    .nav-links {
+        gap: 15px;
+    }
+    
+    .control-group {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+/* Add this CSS for running time */
+.running-time {
+text-align: center;
+font-size: 35px;
+font-weight: 500;
+color: var(--primary-color);
+margin-bottom: 10px;
+}
+
+#running-time {
+font-weight: 600;
+color: var(--secondary-color);
+}
+
+/* Replace existing .remove-btn styles with this */
+.remove-btn {
+background: linear-gradient(135deg, #ff6b6b, #ff5252);
+color: white;
+border: none;
+padding: 8px 15px;
+border-radius: 8px;
+cursor: pointer;
+transition: var(--transition);
+display: flex;
+align-items: center;
+gap: 5px;
+font-size: 14px;
+font-weight: 500;
+box-shadow: 0 3px 6px rgba(255, 107, 107, 0.2);
+}
+
+.remove-btn:hover {
+background: linear-gradient(135deg, #ff5252, #ff6b6b);
+transform: scale(1.05);
+box-shadow: 0 5px 10px rgba(255, 107, 107, 0.3);
+}
+.city-timezone {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgb(254, 250, 250);
+    margin-bottom: 5px;
+}
+.timezone-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-content span {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+        
+        nav {
+            margin-bottom: 20px;
+        }
+        
+        nav a {
+            margin-right: 15px;
+        }
+        
+        /* Loader styles */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+   </style>
+</head>
+<body>
+
+
+    
+    
+   
+  
+
+
+<div class="container-wrapper">
+    
+    
+        <div class="navbar">
+            <div class="loader-overlay" id="loaderOverlay">
+                <div class="loader"></div>
+            </div>
+            <div class="logo">
+                <i class="fas fa-globe"></i>
+                <span class="logo-text">ConvX| Time Zone</span>
+            </div>
+            <div class="nav-links">
+                <!-- <a href="#" class="nav-link">HOME</a> -->
+                <a href="Converter.html" id="converter-link" class="nav-link">Measurement Converter</a>
+                <a href="currency.html" class="nav-link">Currency Converter</a>
+                <a href="history.html?username=${username}" class="nav-link">History</a>
+                <!-- <a href="#">TIME MAP</a> -->
+                
+                <div id="g_id_onload"
+                     data-client_id="470958890844-1pbuuaj1cstbpn4i4fta82uhs3dqev23.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                
+                <div class="g_id_signin" data-type="standard"></div>
+            
+                <div id="profile">
+                    
+                    <button class="btn btn-primary" onclick="signOut()">Sign Out</button>
+                </div>
+                
+                          </div>
+                                  </div>
+                                
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3><span id="user-name"></span></h3>
+            <div class="clock-container1">
+            <div class="sidebar-header">
+
+
+                
+                
+                
+                
+                <div class="running-time">
+                    <span id="running-time">12:00:00 PM</span>
+                </div>
+                <div class="date-display" id="current-date">Monday, March 3, 2025</div>
+                <div class="sidebar-title" id="user-timezone-title"></div>
+                <div class="sidebar-title" id="zone">Zone</div>
+            </div>
+            </div>
+                        
+            <div class="clock-container">
+                <div class="clock" id="clock">12:00:00 PM</div>
+                <span id="selected-date">Monday, March 4, 2025</span>
+                <div class="city-timezone" id="city-timezone">India</div>
+                <div class="city-timezone" id="city-timezone1">(GMT+5:30)</div>
+            </div>
+            
+
+            <div class="search-container">
+                
+                <input type="text" id="from_tz_input" class="search-bar" placeholder="Search city or location...">
+                <i class="fas fa-search search-icon"></i>
+                <div id="from_tz_suggestions" class="search-suggestions"></div>
+            </div>
+            <div class="sidebar-section">
+                <!-- <div class="sidebar-section-title">Quick Access</div> -->
+                <div class="quick-cities">
+                    <!-- Quick access cities will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="timezone-card">
+                <div class="card-content">
+                    <span id="card-country">Country</span>
+                    <span id="card-timezone">Timezone</span>
+                </div>
+            </div>
+              <div class="top-controls" id="top-controls">
+                
+                <div class="control-group">
+                    <span class="control-label">Select Time:</span>
+                    <input type="time" id="time" class="time-input">
+
+
+
+                    
+
+                    <button class="btn btn-primary" id="convert-btn" onclick="convertTime()" disabled>
+                        <i class="fas fa-check"></i> Apply
+                    </button>
+               
+                    <div class="calendar-container">
+                        <div>
+                            
+                            <input type="date" id="date"  class="calendar">
+                        </div>
+                    </div>
+                </div>
+                
+
+               
+                                   
+                <div class="control-group">
+                    <div class="search-container">
+                        <input type="text" id="country-search" class="search-bar" placeholder="Add City by Searching...">
+                        <i class="fas fa-search search-icon"></i>
+                        <div id="country-suggestions" class="search-suggestions"></div>
+                    </div>
+                  
+                </div>
+
+
+            </div>
+
+            
+<div id="countries-container"></div>
+<div class="intro-text" id="intro-text">
+    <i class="fas fa-globe-americas intro-icon"></i>
+    <h2>Welcome to the Time Zone Converter</h2>
+    <p>This tool helps you easily compare and convert times across different time zones worldwide.</p>
+    <p>Simply select a time, search for a city, and add it to your list to see the converted time.</p>
+    <p>You can add multiple cities to compare times across different regions simultaneously.</p>
+    <!-- <button class="btn btn-primary" onclick="document.getElementById('countrySearchInput').focus()">
+        <i class="fas fa-play"></i> Get Started
+    </button> -->
+</div>
+            <div class="locations-container" id="locations-container"></div>
+
+            <!-- Features Section -->
+            <h2 class="features-title">Features</h2>
+<div class="features-container">
+    <!-- Currency Converter -->
+    <div class="feature-card">
+        <i class="fas fa-coins feature-icon"></i> <!-- Icon for Currency Converter -->
+        <h3 class="feature-title">Currency Converter</h3>
+        <p class="feature-description">Easily convert currencies with real-time exchange rates. Supports over 150 global currencies and provides accurate, up-to-date conversions.</p>
+    </div>
+
+    <!-- Measurement Converter -->
+    <div class="feature-card">
+        <i class="fas fa-ruler-combined feature-icon"></i> <!-- Icon for Measurement Converter -->
+        <h3 class="feature-title">Measurement Converter</h3>
+        <p class="feature-description">Convert between different units of measurement, including length, weight, volume, and temperature. Simple and intuitive to use.</p>
+    </div>
+
+    <!-- Timezone Converter -->
+    <div class="feature-card">
+        <i class="fas fa-globe feature-icon"></i> <!-- Icon for Timezone Converter -->
+        <h3 class="feature-title">Timezone Converter</h3>
+        <p class="feature-description">Convert and compare times across multiple time zones. Plan meetings, events, and travel with ease using our timezone tool.</p>
+    </div>
+</div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <i class="fas fa-globe"></i>
+                        <span class="footer-logo-text">TIME ZONE</span>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#">About Us</a>
+                        <a href="#">Features</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Contact</a>
+                        <a href="#">Privacy Policy</a>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="copyright">
+                    &copy; 2025 Time Zone Converter. All rights reserved.
+                </div>
+            </footer>
+        </div>
+    </div>
+
+ 
+        
+    
+
+      <script>
+
+
+function storeConversionDetails(username, fromCountry, toCountry, selectedTime, convertedTime) {
+    fetch('http://localhost:5000/store_conversion_details', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            from_country: fromCountry,
+            to_country: toCountry,
+            selected_time: selectedTime,
+            converted_time: convertedTime
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Conversion details stored:', data);
+    })
+    .catch(error => {
+        console.error('Error storing conversion details:', error);
+    });
+}
+
+// Modify the convertTime function to store detailed conversion information
+function convertTime() {
+    const dateInput = document.getElementById("date").value;
+    const timeInput = document.getElementById("time").value;
+    const formattedDatetime = `${dateInput} ${timeInput}:00`;
+    const fromTz = document.getElementById("from_tz_input").getAttribute("data-timezone");
+    const countryCards = document.querySelectorAll(".country-card");
+    const username = document.getElementById("user-name").textContent;
+
+    const baseUrl = 'http://localhost:5000/convert';
+    const params = new URLSearchParams({
+        datetime: formattedDatetime,
+        from_tz: fromTz
+    });
+
+    countryCards.forEach(card => {
+        const timezone = card.getAttribute("data-timezone");
+        params.append('to_tz', timezone);
+    });
+
+    fetch(`${baseUrl}?${params.toString()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                alert("Error: " + data.error);
+                return;
+            }
+
+            // Update the UI with converted times
+            countryCards.forEach(card => {
+                const cardTimezone = card.getAttribute("data-timezone");
+                const convertedDateElement = card.querySelector(".converted-date");
+                const convertedTimeElement = card.querySelector(".converted-time");
+                
+                const matchingConversion = data.converted_times.find(
+                    entry => entry.converted_timezone === cardTimezone
+                );
+
+                if (matchingConversion) {
+                    const [convertedDate, convertedTime] = matchingConversion.converted_datetime.split(' ');
+                    convertedDateElement.textContent = convertedDate;
+                    convertedTimeElement.textContent = convertedTime;
+
+                    // Store the conversion history in the backend
+                    storeConversionHistory(username, fromTz, cardTimezone, matchingConversion.converted_datetime);
+
+                    // Store detailed conversion information
+                    const fromCountry = document.getElementById("card-country").textContent;
+                    const toCountry = card.querySelector(".city-name").textContent;
+                    storeConversionDetails(username, fromCountry, toCountry, formattedDatetime, matchingConversion.converted_datetime);
+                }
+            });
+        })
+        .catch(error => {
+            alert("Error fetching conversion: " + error.message);
+        });
+}
+
+
+  // Get all links on the page
+  const links = document.querySelectorAll('a');
+        const loader = document.getElementById('loaderOverlay');
+        
+        // Add click event listener to each link
+        links.forEach(link => {
+            link.addEventListener('click', function(event) {
+                // Prevent the default link behavior
+                event.preventDefault();
+                
+                // Get the href attribute
+                const href = this.getAttribute('href');
+                
+                // Show the loader
+                loader.style.display = 'flex';
+                
+                // Wait a short time, then navigate to the link
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 800); // Short delay to show the loader
+            });
+        });       
+
+        
+        // / Handle Google Sign-In
+        function handleCredentialResponse(response) {
+    const decodedCredential = JSON.parse(atob(response.credential.split(".")[1]));
+    const username = decodedCredential.name;
+    const email = decodedCredential.email;
+
+    // Store user data in localStorage
+    localStorage.setItem('username', username);
+    localStorage.setItem('email', email);
+
+    // Update the UI
+    document.getElementById("user-name").textContent = username;
+    document.getElementById("profile").style.display = "block";
+    document.querySelector(".g_id_signin").style.display = "none";
+
+    // Update the history link with the username
+    const historyLink = document.querySelector('a[href="history.html"]');
+    historyLink.href = `history.html?username=${username}`;
+
+    // Store user data in the backend
+    fetch('http://localhost:5000/store_user', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username, email: email }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('User data stored:', data);
+    })
+    .catch(error => {
+        console.error('Error storing user data:', error);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem('username');
+    if (username) {
+        // User is logged in, update the UI
+        document.getElementById("user-name").textContent = username;
+        document.getElementById("profile").style.display = "block";
+        document.querySelector(".g_id_signin").style.display = "none";
+
+        // Update the history link with the username
+        const historyLink = document.querySelector('a[href="history.html"]');
+        historyLink.href = `history.html?username=${username}`;
+    } else {
+        // User is not logged in, show the sign-in button
+        document.getElementById("profile").style.display = "none";
+        document.querySelector(".g_id_signin").style.display = "block";
+    }
+});
+
+            // Sign out the user
+            function signOut() {
+                google.accounts.id.disableAutoSelect();
+                document.getElementById("profile").style.display = "none";
+                document.querySelector(".g_id_signin").style.display = "block";
+            }
+
+            // Store conversion history in the backend
+            // function storeConversionHistory(username, fromTz, toTz, convertedTime) {
+            //     fetch('http://localhost:5000/store_conversion', {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify({
+            //             username: username,
+            //             from_tz: fromTz,
+            //             to_tz: toTz,
+            //             converted_time: convertedTime
+            //         }),
+            //     })
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         console.log('Conversion history stored:', data);
+            //     })
+            //     .catch(error => {
+            //         console.error('Error storing conversion history:', error);
+            //     });
+            // }
+
+            // Perform timezone conversion
+            function convertTime() {
+                const dateInput = document.getElementById("date").value;
+                const timeInput = document.getElementById("time").value;
+                const formattedDatetime = `${dateInput} ${timeInput}:00`;
+                const fromTz = document.getElementById("from_tz_input").getAttribute("data-timezone");
+                const countryCards = document.querySelectorAll(".country-card");
+                const username = document.getElementById("user-name").textContent;
+
+                const baseUrl = 'http://localhost:5000/convert';
+                const params = new URLSearchParams({
+                    datetime: formattedDatetime,
+                    from_tz: fromTz
+                });
+
+                countryCards.forEach(card => {
+                    const timezone = card.getAttribute("data-timezone");
+                    params.append('to_tz', timezone);
+                });
+
+                fetch(`${baseUrl}?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            alert("Error: " + data.error);
+                            return;
+                        }
+
+                        // Update the UI with converted times
+                        countryCards.forEach(card => {
+                            const cardTimezone = card.getAttribute("data-timezone");
+                            const convertedDateElement = card.querySelector(".converted-date");
+                            const convertedTimeElement = card.querySelector(".converted-time");
+                            
+                            const matchingConversion = data.converted_times.find(
+                                entry => entry.converted_timezone === cardTimezone
+                            );
+
+                            if (matchingConversion) {
+                                const [convertedDate, convertedTime] = matchingConversion.converted_datetime.split(' ');
+                                convertedDateElement.textContent = convertedDate;
+                                convertedTimeElement.textContent = convertedTime;
+
+                                // Store the conversion history in the backend
+                                storeConversionHistory(username, fromTz, cardTimezone, matchingConversion.converted_datetime);
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        alert("Error fetching conversion: " + error.message);
+                    });
+            }
+
+            // Initialize the page
+            document.addEventListener("DOMContentLoaded", () => {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById("date").value = today;
+            });
+
+// function storeConversionHistory(username, fromTz, toTz, convertedTime) {
+//     fetch('http://localhost:5000/store_conversion', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//             username: username,
+//             from_tz: fromTz,
+//             to_tz: toTz,
+//             converted_time: convertedTime
+//         }),
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log('Conversion history stored:', data);
+//     })
+//     .catch(error => {
+//         console.error('Error storing conversion history:', error);
+//     });
+// }
+
+
+function signOut() {
+    google.accounts.id.disableAutoSelect();
+    
+    // Hide the Sign Out button and clear the username
+    document.getElementById("profile").style.display = "none"; // Hide the Sign Out button
+    document.querySelector(".g_id_signin").style.display = "block"; // Show the Google Sign-In button
+    
+    // Clear the username and hide the <h3> element
+    document.getElementById("user-name").textContent = ""; // Clear the username
+    document.querySelector("#profile h3").style.display = "none"; // Hide the <h3> element
+}
+
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: "470958890844-1pbuuaj1cstbpn4i4fta82uhs3dqev23.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+        document.querySelector(".g_id_signin"),
+        { theme: "outline", size: "large" }
+    );
+};
+
+
+
+// Start the running time when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    startRunningTime(userTimeZone);
+});
+
+
+function updateUserTimezoneCard() {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's timezone
+    const timezoneAbbreviation = getTimezoneAbbreviation(userTimeZone); // Get timezone abbreviation (e.g., IST, EST)
+
+    // Update the title with the user's timezone
+    document.getElementById("zone").textContent = `(${timezoneAbbreviation})`;
+
+    // Update the running time and date
+    updateRunningTime();
+    updateCurrentDate();
+}
+
+async function getUserLocationAndTime() {
+    try {
+        const response = await fetch("https://ipapi.co/json/"); // Get user's location based on IP
+        const data = await response.json();
+        
+        const country = data.country_name;
+        const city = data.city;
+        const timezone = data.timezone;
+        const offset = data.utc_offset; // Get UTC offset
+        
+        // Update the sidebar with country and timezone
+        document.getElementById("user-timezone-title").textContent = `${country}`;
+        document.getElementById("zone").textContent = ` ${timezone}`;
+        
+        // Update the clock container with city and timezone
+        document.getElementById("city-timezone").textContent = `${city}`;
+        document.getElementById("city-timezone1").textContent = `(GMT${offset})`;
+        
+        function updateTime() {
+            const now = new Date();
+            
+            // Format time
+            const timeOptions = { timeZone: timezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const formattedTime = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+            document.getElementById("running-time").textContent = formattedTime;
+           
+            
+            // Format date
+            const dateOptions = { timeZone: timezone, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
+            document.getElementById("current-date").textContent = formattedDate;
+            // document.getElementById("selected-date").textContent = formattedDate;
+        }
+        
+        setInterval(updateTime, 1000); // Update time every second
+        updateTime(); // Initial call to display time immediately
+    } catch (error) {
+        console.error("Error fetching user location: ", error);
+        // Fallback to a default timezone if the API fails
+        const fallbackTimezone = "Asia/Kolkata"; // Example: India's timezone
+        document.getElementById("user-timezone-title").textContent = "India";
+        document.getElementById("zone").textContent = "Asia/Kolkata";
+        document.getElementById("city-timezone").textContent = "India";
+        document.getElementById("city-timezone1").textContent = "(GMT+5:30)";
+        
+        function updateTime() {
+            const now = new Date();
+            
+            // Format time
+            const timeOptions = { timeZone: fallbackTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const formattedTime = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+            document.getElementById("running-time").textContent = formattedTime;
+            //document.getElementById("clock").textContent = formattedTime;
+            
+            // Format date
+            const dateOptions = { timeZone: fallbackTimezone, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
+            document.getElementById("current-date").textContent = formattedDate;
+            document.getElementById("selected-date").textContent = formattedDate;
+        }
+        
+        setInterval(updateTime, 1000); // Update time every second
+        updateTime(); // Initial call to display time immediately
+    }
+}
+
+// Call the function to start the process
+getUserLocationAndTime();
+
+document.addEventListener("DOMContentLoaded", () => {
+    getUserLocationAndTime();
+    updateUserTimezoneCard();
+});
+        const cities = [
+            { name: "Berlin", timeZone: "Europe/Berlin" },
+            { name: "Chicago", timeZone: "America/Chicago" },
+            { name: "Houston", timeZone: "America/Houston" },
+            { name: "London", timeZone: "Europe/London" },
+            { name: "Los Angeles", timeZone: "America/Los_Angeles" },
+            { name: "New York", timeZone: "America/New_York" },
+            { name: "Paris", timeZone: "Europe/Paris" },
+            { name: "San Francisco", timeZone: "America/Los_Angeles" },
+            { name: "Sydney", timeZone: "Australia/Sydney" },
+            { name: "Tokyo", timeZone: "Asia/Tokyo" },
+            { name: "India", timeZone: "Asia/Kolkata" }, 
+            { name: "America", timeZone: "America/New_York" }, 
+            { name: "Singapore", timeZone: "Asia/Singapore" },
+            { name: "Kaliningrad Oblast", timeZone: "Europe/Kaliningrad" },
+      { name: "Moscow, St. Petersburg, Western Russia", timeZone: "Europe/Moscow" },
+      { name: "Samara Oblast", timeZone: "Europe/Samara" },
+      { name: "Ural Region", timeZone: "Asia/Yekaterinburg" },
+      { name: "Western Siberia", timeZone: "Asia/Omsk" },
+      { name: "Central Siberia", timeZone: "Asia/Krasnoyarsk" },
+      { name: "Irkutsk Oblast", timeZone: "Asia/Irkutsk" },
+      { name: "Yakutsk, Sakha Republic", timeZone: "Asia/Yakutsk" },
+      { name: "Vladivostok, Primorsky Krai", timeZone: "Asia/Vladivostok" },
+      { name: "Magadan Oblast", timeZone: "Asia/Magadan" },
+      { name: "Kamchatka Peninsula", timeZone: "Asia/Kamchatka" },
+      { name: "Newfoundland", timeZone: "America/St_Johns" },
+      { name: "Atlantic Provinces", timeZone: "America/Halifax" },
+      { name: "Eastern Canada (Ontario, Quebec)", timeZone: "America/Toronto" },
+      { name: "Central Canada (Manitoba)", timeZone: "America/Winnipeg" },
+      { name: "Mountain Provinces (Alberta)", timeZone: "America/Edmonton" },
+      { name: "Pacific Coast (British Columbia)", timeZone: "America/Vancouver" },
+      { name: "Yukon", timeZone: "America/Whitehorse" },
+      { name: "Western Australia", timeZone: "Australia/Perth" },
+      { name: "Northern Territory", timeZone: "Australia/Darwin" },
+      { name: "Queensland", timeZone: "Australia/Brisbane" },
+      { name: "South Australia", timeZone: "Australia/Adelaide" },
+      { name: "New South Wales, Victoria, Tasmania", timeZone: "Australia/Sydney" },
+      { name: "Acre, Southwest Amazonas", timeZone: "America/Rio_Branco" },
+      { name: "Mato Grosso, Mato Grosso do Sul, Amazonas", timeZone: "America/Cuiaba" },
+      { name: "Brasília, São Paulo, Rio de Janeiro", timeZone: "America/Sao_Paulo" },
+      { name: "Fernando de Noronha", timeZone: "America/Noronha" },
+      { name: "Western Indonesia (Java, Sumatra)", timeZone: "Asia/Jakarta" },
+      { name: "Central Indonesia (Bali, Nusa Tenggara)", timeZone: "Asia/Makassar" },
+      { name: "Eastern Indonesia (Papua, Maluku)", timeZone: "Asia/Jayapura" },
+      { name: "Central Mexico", timeZone: "America/Mexico_City" },
+      { name: "Pacific Coast", timeZone: "America/Tijuana" },
+      { name: "Sonora", timeZone: "America/Hermosillo" },
+      { name: "Western Kazakhstan", timeZone: "Asia/Aqtau" },
+      { name: "Eastern Kazakhstan", timeZone: "Asia/Almaty" },
+      { name: "Western DRC", timeZone: "Africa/Kinshasa" },
+      { name: "Eastern DRC", timeZone: "Africa/Lubumbashi" },
+      { name: "Gilbert Islands", timeZone: "Pacific/Tarawa" },
+      { name: "Phoenix Islands", timeZone: "Pacific/Enderbury" },
+      { name: "Line Islands", timeZone: "Pacific/Kiritimati" },
+      { name: "Most of Mongolia", timeZone: "Asia/Ulaanbaatar" },
+      { name: "Western Mongolia (Hovd)", timeZone: "Asia/Hovd" },
+      { name: "Metropolitan France", timeZone: "Europe/Paris" },
+      { name: "French Guiana", timeZone: "America/Cayenne" },
+      { name: "Guadeloupe, Martinique", timeZone: "America/Guadeloupe" },
+      { name: "Réunion", timeZone: "Indian/Reunion" },
+      { name: "Mayotte", timeZone: "Indian/Mayotte" },
+      { name: "French Polynesia", timeZone: "Pacific/Tahiti" },
+      { name: "New Caledonia", timeZone: "Pacific/Noumea" },
+      { name: "Wallis and Futuna", timeZone: "Pacific/Wallis" },
+      { name: "French Southern and Antarctic Lands", timeZone: "Indian/Kerguelen" },
+      { name: "Great Britain, Northern Ireland", timeZone: "Europe/London" },
+      { name: "Bermuda", timeZone: "Atlantic/Bermuda" },
+      { name: "Cayman Islands", timeZone: "America/Cayman" },
+      { name: "Falkland Islands", timeZone: "Atlantic/Stanley" },
+      { name: "Gibraltar", timeZone: "Europe/Gibraltar" },
+      { name: "British Indian Ocean Territory", timeZone: "Indian/Chagos" },
+      { name: "Pitcairn Islands", timeZone: "Pacific/Pitcairn" },
+      { name: "Continental Chile", timeZone: "America/Santiago" },
+      { name: "Easter Island", timeZone: "Pacific/Easter" },
+      { name: "Magallanes Region", timeZone: "America/Punta_Arenas" },
+      { name: "Continental Portugal", timeZone: "Europe/Lisbon" },
+      { name: "Azores", timeZone: "Atlantic/Azores" },
+      { name: "Madeira", timeZone: "Atlantic/Madeira" },
+      { name: "Continental Spain", timeZone: "Europe/Madrid" },
+      { name: "Canary Islands", timeZone: "Atlantic/Canary" },
+      { name: "Ceuta", timeZone: "Africa/Ceuta" },
+      { name: "Chuuk, Yap", timeZone: "Pacific/Chuuk" },
+      { name: "Pohnpei, Kosrae", timeZone: "Pacific/Pohnpei" },
+      { name: "Mainland Ecuador", timeZone: "America/Guayaquil" },
+      { name: "Galápagos Islands", timeZone: "Pacific/Galapagos" },
+      { name: "Most of Argentina", timeZone: "America/Argentina/Buenos_Aires" },
+      { name: "Tucumán", timeZone: "America/Argentina/Tucuman" },
+      { name: "Salta", timeZone: "America/Argentina/Salta" },
+      { name: "Jujuy", timeZone: "America/Argentina/Jujuy" },
+      { name: "Catamarca", timeZone: "America/Argentina/Catamarca" },
+      { name: "Eastern Settlements", timeZone: "America/Nuuk" },
+      { name: "Danmarkshavn", timeZone: "America/Danmarkshavn" },
+      { name: "Thule Air Base", timeZone: "America/Thule" },
+      { name: "Scoresbysund", timeZone: "America/Scoresbysund" },
+      { name: "Palmer Station", timeZone: "Antarctica/Palmer" },
+      { name: "Rothera Station", timeZone: "Antarctica/Rothera" },
+      { name: "Syowa Station", timeZone: "Antarctica/Syowa" },
+      { name: "Mawson Station", timeZone: "Antarctica/Mawson" },
+      { name: "Davis Station", timeZone: "Antarctica/Davis" },
+      { name: "Casey Station", timeZone: "Antarctica/Casey" },
+      { name: "Vostok Station", timeZone: "Antarctica/Vostok" },
+      { name: "McMurdo Station", timeZone: "Antarctica/McMurdo" },
+      { name: "All of China (officially)", timeZone: "Asia/Shanghai" },
+      // Geographically spans 5 time zones but officially uses only 1
+      { name: "Xinjiang (Unofficial local time)", timeZone: "Asia/Urumqi" },
+      { name: "Mainland Denmark", timeZone: "Europe/Copenhagen" },
+      { name: "Faroe Islands", timeZone: "Atlantic/Faroe" },
+      { name: "Greenland", timeZone: "America/Nuuk" },
+      { name: "European Netherlands", timeZone: "Europe/Amsterdam" },
+      { name: "Caribbean Netherlands", timeZone: "America/Kralendijk" },
+      { name: "Aruba", timeZone: "America/Aruba" },
+      { name: "Curaçao", timeZone: "America/Curacao" },
+      { name: "Sint Maarten", timeZone: "America/Lower_Princes" },
+      { name: "Main Territory", timeZone: "Pacific/Port_Moresby" },
+      { name: "Bougainville", timeZone: "Pacific/Bougainville" },
+      { name: "Most of Ukraine", timeZone: "Europe/Kiev" },
+      { name: "Crimea (disputed)", timeZone: "Europe/Simferopol" },
+      { name: "Mainland Finland", timeZone: "Europe/Helsinki" },
+      { name: "Åland Islands", timeZone: "Europe/Mariehamn" },
+      { name: "Mainland Norway", timeZone: "Europe/Oslo" },
+      { name: "Svalbard", timeZone: "Arctic/Longyearbyen" },
+      { name: "Most of Colombia", timeZone: "America/Bogota" },
+      { name: "San Andrés and Providencia (unofficial)", timeZone: "America/Bogota" },
+      { name: "All of South Africa (officially)", timeZone: "Africa/Johannesburg" },
+      { name: "Marion Island", timeZone: "Africa/Johannesburg" },
+      { name: "All of Venezuela (current)", timeZone: "America/Caracas" },
+      { name: "Las Aves, Los Roques (historical)", timeZone: "America/Caracas" },
+      { name: "All of Algeria", timeZone: "Africa/Algiers" },
+      { name: "All of Libya", timeZone: "Africa/Tripoli" },
+      { name: "Most of Mali", timeZone: "Africa/Bamako" },
+      { name: "Northern Mali (some local variations)", timeZone: "Africa/Bamako" },
+  { name: "Afghanistan", timeZone: "Asia/Kabul" },
+  { name: "Albania", timeZone: "Europe/Tirane" },
+  { name: "Algeria", timeZone: "Africa/Algiers" },
+  { name: "Andorra", timeZone: "Europe/Andorra" },
+  { name: "Angola", timeZone: "Africa/Luanda" },
+  { name: "Antigua and Barbuda", timeZone: "America/Antigua" },
+  { name: "Argentina", timeZone: "America/Argentina/Buenos_Aires" },
+  { name: "Armenia", timeZone: "Asia/Yerevan" },
+  { name: "Australia", timeZone: "Australia/Melbourne" }, // Changed from Sydney
+  { name: "Austria", timeZone: "Europe/Vienna" },
+  { name: "Azerbaijan", timeZone: "Asia/Baku" },
+  { name: "Bahamas", timeZone: "America/Nassau" },
+  { name: "Bahrain", timeZone: "Asia/Bahrain" },
+  { name: "Bangladesh", timeZone: "Asia/Dhaka" },
+  { name: "Barbados", timeZone: "America/Barbados" },
+  { name: "Belarus", timeZone: "Europe/Minsk" },
+  { name: "Belgium", timeZone: "Europe/Brussels" },
+  { name: "Belize", timeZone: "America/Belize" },
+  { name: "Benin", timeZone: "Africa/Porto-Novo" },
+  { name: "Bhutan", timeZone: "Asia/Thimphu" },
+  { name: "Bolivia", timeZone: "America/La_Paz" },
+  { name: "Bosnia and Herzegovina", timeZone: "Europe/Sarajevo" },
+  { name: "Botswana", timeZone: "Africa/Gaborone" },
+  { name: "Brazil", timeZone: "America/Sao_Paulo" },
+  { name: "Brunei", timeZone: "Asia/Brunei" },
+  { name: "Bulgaria", timeZone: "Europe/Sofia" },
+  { name: "Burkina Faso", timeZone: "Africa/Ouagadougou" },
+  { name: "Burundi", timeZone: "Africa/Bujumbura" },
+  { name: "Cambodia", timeZone: "Asia/Phnom_Penh" },
+  { name: "Cameroon", timeZone: "Africa/Douala" },
+  { name: "Canada", timeZone: "America/Toronto" },
+  { name: "Cape Verde", timeZone: "Atlantic/Cape_Verde" },
+  { name: "Central African Republic", timeZone: "Africa/Bangui" },
+  { name: "Chad", timeZone: "Africa/Ndjamena" },
+  { name: "Chile", timeZone: "America/Santiago" },
+  { name: "China", timeZone: "Asia/Shanghai" },
+  { name: "Colombia", timeZone: "America/Bogota" },
+  { name: "Comoros", timeZone: "Indian/Comoro" },
+  { name: "Congo, Democratic Republic of the", timeZone: "Africa/Kinshasa" },
+  { name: "Congo, Republic of the", timeZone: "Africa/Brazzaville" },
+  { name: "Costa Rica", timeZone: "America/Costa_Rica" },
+  { name: "Croatia", timeZone: "Europe/Zagreb" },
+  { name: "Cuba", timeZone: "America/Havana" },
+  { name: "Cyprus", timeZone: "Asia/Nicosia" },
+  { name: "Czech Republic", timeZone: "Europe/Prague" },
+  { name: "Denmark", timeZone: "Europe/Copenhagen" },
+  { name: "Djibouti", timeZone: "Africa/Djibouti" },
+  { name: "Dominica", timeZone: "America/Dominica" },
+  { name: "Dominican Republic", timeZone: "America/Santo_Domingo" },
+  { name: "East Timor", timeZone: "Asia/Dili" },
+  { name: "Ecuador", timeZone: "America/Guayaquil" },
+  { name: "Egypt", timeZone: "Africa/Cairo" },
+  { name: "El Salvador", timeZone: "America/El_Salvador" },
+  { name: "Equatorial Guinea", timeZone: "Africa/Malabo" },
+  { name: "Eritrea", timeZone: "Africa/Asmara" },
+  { name: "Estonia", timeZone: "Europe/Tallinn" },
+  { name: "Eswatini", timeZone: "Africa/Mbabane" },
+  { name: "Ethiopia", timeZone: "Africa/Addis_Ababa" },
+  { name: "Fiji", timeZone: "Pacific/Fiji" },
+  { name: "Finland", timeZone: "Europe/Helsinki" },
+  { name: "Gabon", timeZone: "Africa/Libreville" },
+  { name: "Gambia", timeZone: "Africa/Banjul" },
+  { name: "Georgia", timeZone: "Asia/Tbilisi" },
+  { name: "Ghana", timeZone: "Africa/Accra" },
+  { name: "Greece", timeZone: "Europe/Athens" },
+  { name: "Grenada", timeZone: "America/Grenada" },
+  { name: "Guatemala", timeZone: "America/Guatemala" },
+  { name: "Guinea", timeZone: "Africa/Conakry" },
+  { name: "Guinea-Bissau", timeZone: "Africa/Bissau" },
+  { name: "Guyana", timeZone: "America/Guyana" },
+  { name: "Haiti", timeZone: "America/Port-au-Prince" },
+  { name: "Honduras", timeZone: "America/Tegucigalpa" },
+  { name: "Hungary", timeZone: "Europe/Budapest" },
+  { name: "Iceland", timeZone: "Atlantic/Reykjavik" },
+  { name: "Indonesia", timeZone: "Asia/Jakarta" },
+  { name: "Iran", timeZone: "Asia/Tehran" },
+  { name: "Iraq", timeZone: "Asia/Baghdad" },
+  { name: "Ireland", timeZone: "Europe/Dublin" },
+  { name: "Israel", timeZone: "Asia/Jerusalem" },
+  { name: "Italy", timeZone: "Europe/Rome" },
+  { name: "Jamaica", timeZone: "America/Jamaica" },
+  { name: "Jordan", timeZone: "Asia/Amman" },
+  { name: "Kazakhstan", timeZone: "Asia/Almaty" },
+  { name: "Kenya", timeZone: "Africa/Nairobi" },
+  { name: "Kiribati", timeZone: "Pacific/Tarawa" },
+  { name: "Korea, North", timeZone: "Asia/Pyongyang" },
+  { name: "Korea, South", timeZone: "Asia/Seoul" },
+  { name: "Kosovo", timeZone: "Europe/Belgrade" },
+  { name: "Kuwait", timeZone: "Asia/Kuwait" },
+  { name: "Kyrgyzstan", timeZone: "Asia/Bishkek" },
+  { name: "Laos", timeZone: "Asia/Vientiane" },
+  { name: "Latvia", timeZone: "Europe/Riga" },
+  { name: "Lebanon", timeZone: "Asia/Beirut" },
+  { name: "Lesotho", timeZone: "Africa/Maseru" },
+  { name: "Liberia", timeZone: "Africa/Monrovia" },
+  { name: "Libya", timeZone: "Africa/Tripoli" },
+  { name: "Liechtenstein", timeZone: "Europe/Vaduz" },
+  { name: "Lithuania", timeZone: "Europe/Vilnius" },
+  { name: "Luxembourg", timeZone: "Europe/Luxembourg" },
+  { name: "Madagascar", timeZone: "Indian/Antananarivo" },
+  { name: "Malawi", timeZone: "Africa/Blantyre" },
+  { name: "Malaysia", timeZone: "Asia/Kuala_Lumpur" },
+  { name: "Maldives", timeZone: "Indian/Maldives" },
+  { name: "Mali", timeZone: "Africa/Bamako" },
+  { name: "Malta", timeZone: "Europe/Malta" },
+  { name: "Marshall Islands", timeZone: "Pacific/Majuro" },
+  { name: "Mauritania", timeZone: "Africa/Nouakchott" },
+  { name: "Mauritius", timeZone: "Indian/Mauritius" },
+  { name: "Mexico", timeZone: "America/Mexico_City" },
+  { name: "Micronesia", timeZone: "Pacific/Chuuk" },
+  { name: "Moldova", timeZone: "Europe/Chisinau" },
+  { name: "Monaco", timeZone: "Europe/Monaco" },
+  { name: "Mongolia", timeZone: "Asia/Ulaanbaatar" },
+  { name: "Montenegro", timeZone: "Europe/Podgorica" },
+  { name: "Morocco", timeZone: "Africa/Casablanca" },
+  { name: "Mozambique", timeZone: "Africa/Maputo" },
+  { name: "Myanmar", timeZone: "Asia/Yangon" },
+  { name: "Namibia", timeZone: "Africa/Windhoek" },
+  { name: "Nauru", timeZone: "Pacific/Nauru" },
+  { name: "Nepal", timeZone: "Asia/Kathmandu" },
+  { name: "Netherlands", timeZone: "Europe/Amsterdam" },
+  { name: "New Zealand", timeZone: "Pacific/Auckland" },
+  { name: "Nicaragua", timeZone: "America/Managua" },
+  { name: "Niger", timeZone: "Africa/Niamey" },
+  { name: "Nigeria", timeZone: "Africa/Lagos" },
+  { name: "North Macedonia", timeZone: "Europe/Skopje" },
+  { name: "Norway", timeZone: "Europe/Oslo" },
+  { name: "Oman", timeZone: "Asia/Muscat" },
+  { name: "Pakistan", timeZone: "Asia/Karachi" },
+  { name: "Palau", timeZone: "Pacific/Palau" },
+  { name: "Palestine", timeZone: "Asia/Gaza" },
+  { name: "Panama", timeZone: "America/Panama" },
+  { name: "Papua New Guinea", timeZone: "Pacific/Port_Moresby" },
+  { name: "Paraguay", timeZone: "America/Asuncion" },
+  { name: "Peru", timeZone: "America/Lima" },
+  { name: "Philippines", timeZone: "Asia/Manila" },
+  { name: "Poland", timeZone: "Europe/Warsaw" },
+  { name: "Portugal", timeZone: "Europe/Lisbon" },
+  { name: "Qatar", timeZone: "Asia/Qatar" },
+  { name: "Romania", timeZone: "Europe/Bucharest" },
+  { name: "Russia", timeZone: "Europe/Moscow" },
+  { name: "Rwanda", timeZone: "Africa/Kigali" },
+  { name: "Saint Kitts and Nevis", timeZone: "America/St_Kitts" },
+  { name: "Saint Lucia", timeZone: "America/St_Lucia" },
+  { name: "Saint Vincent and the Grenadines", timeZone: "America/St_Vincent" },
+  { name: "Samoa", timeZone: "Pacific/Apia" },
+  { name: "San Marino", timeZone: "Europe/San_Marino" },
+  { name: "Sao Tome and Principe", timeZone: "Africa/Sao_Tome" },
+  { name: "Saudi Arabia", timeZone: "Asia/Riyadh" },
+  { name: "Senegal", timeZone: "Africa/Dakar" },
+  { name: "Serbia", timeZone: "Europe/Belgrade" },
+  { name: "Seychelles", timeZone: "Indian/Mahe" },
+  { name: "Sierra Leone", timeZone: "Africa/Freetown" },
+  { name: "Slovakia", timeZone: "Europe/Bratislava" },
+  { name: "Slovenia", timeZone: "Europe/Ljubljana" },
+  { name: "Solomon Islands", timeZone: "Pacific/Guadalcanal" },
+  { name: "Somalia", timeZone: "Africa/Mogadishu" },
+  { name: "South Africa", timeZone: "Africa/Johannesburg" },
+  { name: "South Sudan", timeZone: "Africa/Juba" },
+  { name: "Spain", timeZone: "Europe/Madrid" },
+  { name: "Sri Lanka", timeZone: "Asia/Colombo" },
+  { name: "Sudan", timeZone: "Africa/Khartoum" },
+  { name: "Suriname", timeZone: "America/Paramaribo" },
+  { name: "Sweden", timeZone: "Europe/Stockholm" },
+  { name: "Switzerland", timeZone: "Europe/Zurich" },
+  { name: "Syria", timeZone: "Asia/Damascus" },
+  { name: "Taiwan", timeZone: "Asia/Taipei" },
+  { name: "Tajikistan", timeZone: "Asia/Dushanbe" },
+  { name: "Tanzania", timeZone: "Africa/Dar_es_Salaam" },
+  { name: "Thailand", timeZone: "Asia/Bangkok" },
+  { name: "Togo", timeZone: "Africa/Lome" },
+  { name: "Tonga", timeZone: "Pacific/Tongatapu" },
+  { name: "Trinidad and Tobago", timeZone: "America/Port_of_Spain" },
+  { name: "Tunisia", timeZone: "Africa/Tunis" },
+  { name: "Turkey", timeZone: "Europe/Istanbul" },
+  { name: "Turkmenistan", timeZone: "Asia/Ashgabat" },
+  { name: "Tuvalu", timeZone: "Pacific/Funafuti" },
+  { name: "Uganda", timeZone: "Africa/Kampala" },
+  { name: "Ukraine", timeZone: "Europe/Kiev" },
+  { name: "United Arab Emirates", timeZone: "Asia/Dubai" },
+  { name: "United Kingdom", timeZone: "Europe/Belfast" }, // Changed from London
+  { name: "Uruguay", timeZone: "America/Montevideo" },
+  { name: "Uzbekistan", timeZone: "Asia/Tashkent" },
+  { name: "Vanuatu", timeZone: "Pacific/Efate" },
+  { name: "Vatican City", timeZone: "Europe/Vatican" },
+  { name: "Venezuela", timeZone: "America/Caracas" },
+  { name: "Vietnam", timeZone: "Asia/Ho_Chi_Minh" },
+  { name: "Yemen", timeZone: "Asia/Aden" },
+  { name: "Zambia", timeZone: "Africa/Lusaka" },
+  { name: "Zimbabwe", timeZone: "Africa/Harare" }
+
+        ];
+
+        const sortedCities = cities.sort((a, b) => a.name.localeCompare(b.name));
+
+        function showSuggestions(inputElement, suggestionsElement, filteredSuggestions) {
+    suggestionsElement.innerHTML = "";
+    if (filteredSuggestions.length === 0) {
+        suggestionsElement.style.display = "none";
+        return;
+    }
+
+    filteredSuggestions.forEach((suggestion, index) => {
+        const div = document.createElement("div");
+        div.classList.add("suggestion");
+        div.textContent = suggestion.name;
+        div.addEventListener("click", () => {
+            inputElement.value = suggestion.name;
+            inputElement.setAttribute("data-timezone", suggestion.timeZone);
+            suggestionsElement.style.display = "none";
+
+            // Check if the search bar is in the sidebar
+            if (inputElement.id === 'from_tz_input') {
+                // Update the sidebar with the selected country's information
+                updateSidebar(suggestion.name, suggestion.timeZone);
+            } else if (inputElement.id === 'country-search') {
+                // Handle the main content's search bar (add country to the list)
+                addCountry();
+            }
+        });
+        suggestionsElement.appendChild(div);
+    });
+
+    suggestionsElement.style.display = "block";
+}
+
+function updateSidebar(countryName, timeZone) {
+    // Update the country name and timezone in the sidebar
+    document.getElementById("city-timezone").textContent = countryName;
+    document.getElementById("city-timezone1").textContent = `(${getTimezoneOffset(timeZone)})`;
+
+    document.getElementById("card-country").textContent = countryName;
+    document.getElementById("card-timezone").textContent = `(${getTimezoneOffset(timeZone)})`;
+    // Start the running time for the selected timezone
+    startRunningTime(timeZone);
+    updateSelectedDate(timeZone);
+
+}
+
+
+
+
+// Function to get the timezone offset (e.g., GMT+5:30)
+function getTimezoneOffset(timeZone) {
+    const date = new Date();
+    const options = { timeZone, timeZoneName: "shortOffset" };
+    const offset = new Intl.DateTimeFormat("en-US", options)
+        .formatToParts(date)
+        .find(part => part.type === "timeZoneName").value;
+    return offset;
+}
+
+// Function to start the running time for the selected timezone
+function startRunningTime(timeZone) {
+    const runningTimeElement = document.getElementById("clock");
+
+    // Clear any existing interval
+    if (window.runningTimeInterval) {
+        clearInterval(window.runningTimeInterval);
+    }
+
+    // Update the running time and date every second
+    window.runningTimeInterval = setInterval(() => {
+        const now = new Date();
+
+        // Update time
+        const timeOptions = {
+            timeZone,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        };
+        const formattedTime = new Intl.DateTimeFormat("en-US", timeOptions).format(now);
+        runningTimeElement.textContent = formattedTime;
+
+        // Update date
+        updateSelectedDate(timeZone);
+    }, 1000);
+}
+
+function updateSelectedDate(timeZone) {
+    const now = new Date();
+    const dateOptions = {
+        timeZone,
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    const formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
+
+    // Update the selected date in the sidebar
+    document.getElementById("selected-date").textContent = formattedDate;
+}
+
+        function debounce(func, delay) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        // Setup suggestions for country search
+        const countrySearchInput = document.getElementById("country-search");
+        const countrySuggestionsElement = document.getElementById("country-suggestions");
+
+        countrySearchInput.addEventListener("input", debounce((e) => {
+            const query = e.target.value.toLowerCase();
+            if (query === "") {
+                showSuggestions(countrySearchInput, countrySuggestionsElement, sortedCities);
+                return;
+            }
+            const filteredSuggestions = sortedCities.filter(city => 
+                city.name.toLowerCase().includes(query)
+            );
+            showSuggestions(countrySearchInput, countrySuggestionsElement, filteredSuggestions);
+        }, 300));
+
+        countrySearchInput.addEventListener("focus", (e) => {
+            if (e.target.value === "") {
+                showSuggestions(countrySearchInput, countrySuggestionsElement, sortedCities);
+            } else {
+                const query = e.target.value.toLowerCase();
+                const filteredSuggestions = sortedCities.filter(city => 
+                    city.name.toLowerCase().includes(query)
+                );
+                showSuggestions(countrySearchInput, countrySuggestionsElement, filteredSuggestions);
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!countrySuggestionsElement.contains(e.target) && 
+                e.target !== countrySearchInput) {
+                countrySuggestionsElement.style.display = 'none';
+            }
+        });
+
+        function addCountry() {
+    const countryInput = document.getElementById("country-search");
+    const countryName = countryInput.value;
+    const countryTimezone = countryInput.getAttribute("data-timezone");
+
+    if (!countryName || !countryTimezone) {
+        alert("Please select a valid country");
+        return;
+    }
+
+    const countriesContainer = document.getElementById("countries-container");
+    const countryCard = document.createElement("div");
+    countryCard.classList.add("country-card");
+    countryCard.innerHTML = `
+        <div class="city-name">${countryName}</div>
+        <div class="converted-details">
+            <strong>Date:</strong> <span class="converted-date">Loading...</span><br>
+            <strong>Time:</strong> <span class="converted-time">Loading...</span>
+        </div>
+        <button class="remove-btn" onclick="removeCountry(this)">Remove</button>
+    `;
+    countryCard.setAttribute("data-timezone", countryTimezone);
+    countriesContainer.appendChild(countryCard);
+
+    // Clear the search input
+    countryInput.value = "";
+    countryInput.removeAttribute("data-timezone");
+
+    // Update convert button state
+    updateConvertButtonState();
+}
+
+
+
+        function removeCountry(button) {
+            button.closest('.country-card').remove();
+            updateConvertButtonState();
+        }
+
+        function updateConvertButtonState() {
+            const convertBtn = document.getElementById("convert-btn");
+            const fromTzInput = document.getElementById("from_tz_input");
+            const countriesContainer = document.getElementById("countries-container");
+            const dateInput = document.getElementById("date");
+            const timeInput = document.getElementById("time");
+
+            const hasFromTz = fromTzInput.getAttribute("data-timezone") !== null;
+            const hasCountries = countriesContainer.children.length > 0;
+            const hasDateTime = dateInput.value && timeInput.value;
+
+            convertBtn.disabled = !(hasFromTz && hasCountries && hasDateTime);
+
+
+        }
+
+
+
+        function convertTime() {
+    const dateInput = document.getElementById("date").value;
+    const timeInput = document.getElementById("time").value;
+    const formattedDatetime = `${dateInput} ${timeInput}:00`;
+    const fromTz = document.getElementById("from_tz_input").getAttribute("data-timezone");
+    const countryCards = document.querySelectorAll(".country-card");
+    const username = document.getElementById("user-name").textContent;
+
+    const baseUrl = 'http://localhost:5000/convert';
+    const params = new URLSearchParams({
+        datetime: formattedDatetime,
+        from_tz: fromTz
+    });
+
+    countryCards.forEach(card => {
+        const timezone = card.getAttribute("data-timezone");
+        params.append('to_tz', timezone);
+    });
+
+    fetch(`${baseUrl}?${params.toString()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                alert("Error: " + data.error);
+                return;
+            }
+
+            // Update the UI with converted times
+            countryCards.forEach(card => {
+                const cardTimezone = card.getAttribute("data-timezone");
+                const convertedDateElement = card.querySelector(".converted-date");
+                const convertedTimeElement = card.querySelector(".converted-time");
+                
+                const matchingConversion = data.converted_times.find(
+                    entry => entry.converted_timezone === cardTimezone
+                );
+
+                if (matchingConversion) {
+                    const [convertedDate, convertedTime] = matchingConversion.converted_datetime.split(' ');
+                    convertedDateElement.textContent = convertedDate;
+                    convertedTimeElement.textContent = convertedTime;
+
+                    // Store the conversion history in the backend
+                    storeConversionHistory(username, fromTz, cardTimezone, matchingConversion.converted_datetime);
+                }
+            });
+        })
+        .catch(error => {
+            alert("Error fetching conversion: " + error.message);
+        });
+}
+
+function fetchConversionHistory() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+
+    if (username) {
+        fetch(`http://localhost:5000/get_conversion_history?username=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                const historyContainer = document.getElementById('history-container');
+                if (data.conversion_history && data.conversion_history.length > 0) {
+                    data.conversion_history.forEach(entry => {
+                        const historyItem = document.createElement('div');
+                        historyItem.classList.add('history-item');
+                        historyItem.innerHTML = `
+                            <p><strong>From:</strong> ${entry.from_tz}</p>
+                            <p><strong>To:</strong> ${entry.to_tz}</p>
+                            <p><strong>Converted Time:</strong> ${entry.converted_time}</p>
+                            <p><strong>Date:</strong> ${entry.timestamp}</p>
+                        `;
+                        historyContainer.appendChild(historyItem);
+                    });
+                } else {
+                    historyContainer.innerHTML = '<p>No conversion history found.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching conversion history:', error);
+            });
+    } else {
+        document.getElementById('history-container').innerHTML = '<p>No username provided.</p>';
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("date").value = today;
+
+    // Fetch conversion history if on the history page
+    if (window.location.pathname.endsWith('history.html')) {
+        fetchConversionHistory();
+    }
+});
+
+
+        // Set default date to today
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById("date").value = today;
+
+            // Setup suggestions for source timezone
+            const fromTzInput = document.getElementById("from_tz_input");
+            const fromTzSuggestions = document.getElementById("from_tz_suggestions");
+
+            fromTzInput.addEventListener("input", debounce((e) => {
+                const query = e.target.value.toLowerCase();
+                if (query === "") {
+                    showSuggestions(fromTzInput, fromTzSuggestions, sortedCities);
+                    return;
+                }
+                const filteredSuggestions = sortedCities.filter(city => city.name.toLowerCase().includes(query));
+                showSuggestions(fromTzInput, fromTzSuggestions, filteredSuggestions);
+            }, 300));
+
+            fromTzInput.addEventListener("focus", () => {
+                showSuggestions(fromTzInput, fromTzSuggestions, sortedCities);
+            });
+
+            // Add event listeners to date, time, and inputs to update convert button state
+            fromTzInput.addEventListener("change", updateConvertButtonState);
+            document.getElementById("date").addEventListener("change", updateConvertButtonState);
+            document.getElementById("time").addEventListener("change", updateConvertButtonState);
+        });
+function storeConversionHistory(username, fromTz, toTz, convertedTime) {
+    fetch('http://localhost:5000/store_conversion', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            from_tz: fromTz,
+            to_tz: toTz,
+            converted_time: convertedTime
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Conversion history stored:', data);
+    })
+    .catch(error => {
+        console.error('Error storing conversion history:', error);
+    });
+}
+
+    </script>
+</body>
+</html>

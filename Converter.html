@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter - MyApp</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4285F4;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #5f6368;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: #4285F4;
+        }
+        
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sign-out-btn {
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: none;
+        }
+        
+        .sign-out-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .user-info {
+            font-size: 0.9rem;
+            color: #202124;
+            display: none;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: #202124;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #4285F4, #0F9D58, #F4B400, #DB4437);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .description-text {
+            color: #5f6368;
+            font-size: 1.1rem;
+        }
+        
+        .converter-section {
+            display: flex;
+            position: relative;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+        
+        .category-selection {
+            width: 30%;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f7fa, #eef2f7);
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+            color: #202124;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-item:hover {
+            background-color: rgba(66, 133, 244, 0.1);
+        }
+        
+        .category-item.active {
+            background-color: rgba(66, 133, 244, 0.2);
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .category-name {
+            font-weight: 500;
+        }
+        .conversion-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f5f7fa;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #202124;
+    display: none; /* Initially hidden */
+}
+
+.conversion-result.show {
+    display: block; /* Show when there's a result */
+}
+        .conversion-container {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .conversion-header {
+            margin-bottom: 2rem;
+        }
+        
+        .conversion-title {
+            font-size: 1.5rem;
+            color: #202124;
+            margin-bottom: 0.5rem;
+        }
+        
+        .conversion-description {
+            color: #5f6368;
+        }
+        
+        .conversion-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .input-group {
+            flex: 1;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #5f6368;
+            font-weight: 500;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #4285F4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+        
+        .search-input {
+            position: relative;
+        }
+        
+        .search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #5f6368;
+        }
+        
+        .search-input input {
+            padding-left: 2.5rem;
+            background-color: #f5f7fa;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .search-results.show {
+            display: block;
+        }
+        
+        .search-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .search-item:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .unit-symbol {
+            color: #5f6368;
+            font-size: 0.9rem;
+            margin-left: 0.3rem;
+        }
+        
+        .convert-btn {
+            align-self: flex-end;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #4285F4, #0F9D58);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 2rem;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
+        }
+        
+        .convert-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #5f6368;
+            padding: 1rem;
+        }
+        
+        .results-section {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eef2f7;
+        }
+        
+        .results-title {
+            font-size: 1.5rem;
+            color: #202124;
+            font-weight: 600;
+        }
+        
+        .clear-all-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .clear-all-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .result-card {
+            background-color: #f8f9fa;
+            border: 1px solid #eef2f7;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eef2f7;
+            color: #4285F4;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .result-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .result-label {
+            color: #5f6368;
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-weight: 500;
+        }
+        
+        .result-final {
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #eef2f7;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #202124;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .delete-btn:hover {
+            color: #f44336;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #5f6368;
+            padding: 2rem;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+        
+        .category-length .category-icon { background-color: #e8f0fe; color: #4285F4; }
+        .category-mass .category-icon { background-color: #e6f4ea; color: #0F9D58; }
+        .category-temperature .category-icon { background-color: #fce8e6; color: #DB4437; }
+        .category-area .category-icon { background-color: #fef7e0; color: #F4B400; }
+        .category-volume .category-icon { background-color: #f3e8fd; color: #9334e6; }
+        .category-digital-storage .category-icon { background-color: #e8f0fe; color: #4285F4; }
+.category-time .category-icon { background-color: #e6f4ea; color: #0F9D58; }
+.category-electricCurrent .category-icon { background-color: #fce8e6; color: #DB4437; }
+.category-luminous-intensity .category-icon { background-color: #fef7e0; color: #F4B400; }
+.category-speed .category-icon { background-color: #f3e8fd; color: #9334e6; }
+.category-acceleration .category-icon { background-color: #e8f0fe; color: #4285F4; }
+.category-force .category-icon { background-color: #e6f4ea; color: #0F9D58; }
+.category-pressure .category-icon { background-color: #fce8e6; color: #DB4437; }
+.category-energy .category-icon { background-color: #fef7e0; color: #F4B400; }
+.category-power .category-icon { background-color: #f3e8fd; color: #9334e6; }
+.category-torque .category-icon { background-color: #e8f0fe; color: #4285F4; }
+.category-frequency .category-icon { background-color: #e6f4ea; color: #0F9D58; }
+.category-wavelength .category-icon { background-color: #fce8e6; color: #DB4437; }
+.category-fuel-efficiency .category-icon { background-color: #fef7e0; color: #F4B400; }
+.category-radiation .category-icon { background-color: #f3e8fd; color: #9334e6; }
+.category-density .category-icon { background-color: #e8f0fe; color: #4285F4; }
+.category-cooking .category-icon { background-color: #fce8e6; color: #DB4437; }
+.category-angle .category-icon { background-color: #fef7e0; color: #F4B400; }
+        
+        .result-card.category-length .result-header { color: #4285F4; }
+        .result-card.category-mass .result-header { color: #0F9D58; }
+        .result-card.category-temperature .result-header { color: #DB4437; }
+        .result-card.category-area .result-header { color: #F4B400; }
+        .result-card.category-volume .result-header { color: #9334e6; }
+        
+
+        .selected-unit {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f5f7fa;
+        }
+        
+        .selected-unit:hover {
+            border-color: #4285F4;
+        }
+        
+        .selected-unit i {
+            margin-left: auto;
+            color: #5f6368;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 992px) {
+            .converter-section {
+                flex-direction: column;
+            }
+            
+            .category-selection {
+                width: 100%;
+                border-radius: 20px 20px 0 0;
+            }
+            
+            .category-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .convert-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .main-content {
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+            
+            .header-section h1 {
+                font-size: 2rem;
+            }
+            
+            .conversion-container {
+                padding: 1.5rem;
+            }
+            
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pagination Icons */
+.pagination-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem; /* Add some space between the card and icons */
+}
+
+.pagination-icon {
+    font-size: 1.5rem;
+    color: #4285F4;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.3s;
+}
+
+.pagination-icon:hover {
+    color: #0F9D58;
+    transform: scale(1.1);
+}
+
+.pagination-icon:active {
+    transform: scale(0.9);
+}
+
+/* Disabled state for icons */
+.pagination-icon[style*="opacity: 0.5"] {
+    cursor: not-allowed;
+}
+.search-input {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-input i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%); 
+    color: #5f6368;
+}
+
+.search-input input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    padding-left: 2.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background-color: #f5f7fa;
+}
+
+.search-input input:focus {
+    outline: none;
+    border-color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-results.show {
+    display: block;
+}
+
+.search-item {
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-item:hover {
+    background-color: #f5f7fa;
+}
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="loader-overlay" id="loaderOverlay">
+            <div class="loader"></div>
+        </div>
+        <div class="logo">ConvX| Unit Converter</div>
+        <div class="nav-links">
+            <a href="middle.html" class="nav-link">Timezone Converter</a>
+            <a href="currency.html" class="nav-link">Currency Converter</a>
+            <div id="profile" style="display: none;">
+                <span id="user-name"></span>
+                <button class="btn btn-primary" onclick="signOut()">Sign Out</button>
+            </div>
+                <!-- Google Sign-In Button -->
+                <div id="g_id_onload"
+                    data-client_id="476913816479-7cca8g5r9f4v20eljpijm1a194mekf2l.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-callback="handleCredentialResponse"
+                    data-auto_prompt="false">
+                </div>
+                <!-- <div class="g_id_signin" data-type="standard"></div> -->
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header Section -->
+        <!-- <div class="header-section">
+            <h1>Smart Unit Converter</h1>
+            <p class="description-text">Convert between different units quickly and accurately</p>
+        </div> -->
+        
+        <!-- Converter Section -->
+        <section class="converter-section">
+            <!-- Category Selection -->
+            <div class="category-selection">
+              
+                <h3 class="category-title">Choose Conversion Type</h3>
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="input-field" id="categorySearch" placeholder="Search conversion types..." autocomplete="off">
+                    <div class="search-results" id="categoryResults"></div>
+                </div>
+                <div class="category-list">
+                    <div class="category-item category-length active" data-category="length">
+                        <div class="category-icon"><i class="fas fa-ruler"></i></div>
+                        <div class="category-name">Length</div>
+                    </div>
+                    <div class="category-item category-mass" data-category="mass">
+                        <div class="category-icon"><i class="fas fa-weight-hanging"></i></div>
+                        <div class="category-name">Mass</div>
+                    </div>
+                    <div class="category-item category-temperature" data-category="temperature">
+                        <div class="category-icon"><i class="fas fa-thermometer-half"></i></div>
+                        <div class="category-name">Temperature</div>
+                    </div>
+                    <div class="category-item category-area" data-category="area">
+                        <div class="category-icon"><i class="fas fa-vector-square"></i></div>
+                        <div class="category-name">Area</div>
+                    </div>
+                    <div class="category-item category-volume" data-category="volume">
+                        <div class="category-icon"><i class="fas fa-cube"></i></div>
+                        <div class="category-name">Volume</div>
+                    </div>
+                    <div class="category-item category-digital-storage" data-category="digitalStorage">
+                        <div class="category-icon"><i class="fas fa-database"></i></div>
+                        <div class="category-name">Digital Storage</div>
+                    </div>
+                    <div class="category-item category-time" data-category="time">
+                        <div class="category-icon"><i class="fas fa-clock"></i></div>
+                        <div class="category-name">Time</div>
+                    </div>
+                    <div class="category-item category-electricCurrent" data-category="electricCurrent">
+                        <div class="category-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="category-name">Electric Current</div>
+                    </div>
+                    <div class="category-item category-luminous-intensity" data-category="luminousIntensity">
+                        <div class="category-icon"><i class="fas fa-lightbulb"></i></div>
+                        <div class="category-name">Luminous Intensity</div>
+                    </div>
+                    <div class="category-item category-speed" data-category="speed">
+                        <div class="category-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="category-name">Speed/Velocity</div>
+                    </div>
+                    <div class="category-item category-acceleration" data-category="acceleration">
+    <div class="category-icon"><i class="fas fa-rocket"></i></div>
+    <div class="category-name">Acceleration</div>
+</div>
+
+<div class="category-item category-force" data-category="force">
+    <div class="category-icon"><i class="fas fa-fist-raised"></i></div>
+    <div class="category-name">Force</div>
+</div>
+
+<div class="category-item category-pressure" data-category="pressure">
+    <div class="category-icon"><i class="fas fa-compress-alt"></i></div>
+    <div class="category-name">Pressure</div>
+</div>
+
+<div class="category-item category-energy" data-category="energy">
+    <div class="category-icon"><i class="fas fa-bolt"></i></div>
+    <div class="category-name">Energy</div>
+</div>
+<div class="category-item category-power" data-category="power">
+    <div class="category-icon"><i class="fas fa-plug"></i></div>
+    <div class="category-name">Power</div>
+</div>
+
+
+<div class="category-item category-torque" data-category="torque">
+    <div class="category-icon"><i class="fas fa-sync"></i></div>
+    <div class="category-name">Torque</div>
+</div>
+<div class="category-item category-frequency" data-category="frequency">
+    <div class="category-icon"><i class="fas fa-wave-square"></i></div>
+    <div class="category-name">Frequency</div>
+</div>
+
+<div class="category-item category-wavelength" data-category="wavelength">
+    <div class="category-icon"><i class="fas fa-ruler-horizontal"></i></div>
+    <div class="category-name">Wavelength</div>
+</div>
+
+<div class="category-item category-fuel-efficiency" data-category="fuelEfficiency">
+    <div class="category-icon"><i class="fas fa-gas-pump"></i></div>
+    <div class="category-name">Fuel Efficiency</div>
+</div>
+<div class="category-item category-radiation" data-category="radiation">
+    <div class="category-icon"><i class="fas fa-radiation"></i></div>
+    <div class="category-name">Radiation</div>
+</div>
+<div class="category-item category-density" data-category="density">
+    <div class="category-icon"><i class="fas fa-weight"></i></div>
+    <div class="category-name">Density</div>
+</div>
+
+
+<div class="category-item category-cooking" data-category="cookingMeasurements">
+    <div class="category-icon"><i class="fas fa-utensils"></i></div>
+    <div class="category-name">Cooking Measurements</div>
+</div>
+
+<div class="category-item category-angle" data-category="angle">
+    <div class="category-icon"><i class="fas fa-drafting-compass"></i></div>
+    <div class="category-name">Angle</div>
+</div>
+
+       </div>
+                <div class="pagination-icons">
+                    <i class="fas fa-chevron-left pagination-icon" id="prev-category-btn"></i>
+                    <i class="fas fa-chevron-right pagination-icon" id="next-category-btn"></i>
+                </div>
+                            </div>
+            
+
+            
+            
+            <!-- Conversion Container -->
+            <div class="conversion-container">
+                <div class="conversion-header">
+                    <h3 class="conversion-title" id="conversion-title">Length Conversion</h3>
+                    <p class="conversion-description" id="conversion-description">Convert between meters, feet, inches, and more</p>
+                </div>
+                
+                <form class="conversion-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="inputValue">Value to Convert</label>
+                            <input type="number" class="input-field" id="inputValue" placeholder="Enter a number" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="fromUnitSearch">From Unit</label>
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="input-field" id="fromUnitSearch" placeholder="Search units..." autocomplete="off">
+                                <div class="search-results" id="fromUnitResults"></div>
+                            </div>
+                            <div class="selected-unit" id="selectedFromUnit">
+                                <span>Meter (m)</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="convert-arrow">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="toUnitSearch">To Unit</label>
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="input-field" id="toUnitSearch" placeholder="Search units..." autocomplete="off">
+                                <div class="search-results" id="toUnitResults"></div>
+                            </div>
+                            <div class="selected-unit" id="selectedToUnit">
+                                <span>Kilometer (km)</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="conversion-result" id="conversion-result">
+                        <span id="conversion-result-text"></span>
+                    </div>
+                    <button type="button" class="convert-btn pulse" id="convert-btn">Convert Now</button>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="results-header">
+                <h3 class="results-title">Conversion Results</h3>
+                <button class="clear-all-btn" id="clear-all-btn" style="display: none;" onclick="clearAllResults()">Clear All</button>
+            </div>
+            <div class="results-container" id="results-container">
+                <div class="no-results" id="no-results">No conversion results yet. Convert a value to see results here.</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+
+const links = document.querySelectorAll('a');
+        const loader = document.getElementById('loaderOverlay');
+        
+        // Add click event listener to each link
+        links.forEach(link => {
+            link.addEventListener('click', function(event) {
+                // Prevent the default link behavior
+                event.preventDefault();
+                
+                // Get the href attribute
+                const href = this.getAttribute('href');
+                
+                // Show the loader
+                loader.style.display = 'flex';
+                
+                // Wait a short time, then navigate to the link
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 800); // Short delay to show the loader
+            });
+        });
+        // Google Sign-In Functionality
+        function handleCredentialResponse(response) {
+            const responsePayload = parseJwt(response.credential);
+            const userInfo = document.getElementById("user-info");
+            const signOutBtn = document.getElementById("sign-out-btn");
+            
+            // Show user info
+            userInfo.style.display = "block";
+            userInfo.innerHTML = `Hello, ${responsePayload.name}`;
+            
+            // Show sign out button
+            signOutBtn.style.display = "block";
+            
+            // Hide Google sign-in button
+            document.querySelector(".g_id_signin").style.display = "none";
+        }
+
+        function parseJwt(token) {
+            let base64Url = token.split('.')[1];
+            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            let jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            ).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const username = localStorage.getItem('username');
+            if (username) {
+                // User is logged in, update UI
+                document.getElementById("user-name").textContent = username;
+                document.getElementById("profile").style.display = "block";
+            } else {
+                // User is not logged in, redirect to login page
+                window.location.href = "middle.html";
+            }
+        });
+
+        function signOut() {
+            google.accounts.id.disableAutoSelect();
+            localStorage.removeItem('username');
+            localStorage.removeItem('email');
+            window.location.href = "middle.html"; // Redirect to login page
+        }
+
+
+
+    // DOM elements
+const categorySearch = document.getElementById('categorySearch');
+const categoryResults = document.getElementById('categoryResults');
+// const categoryItems = document.querySelectorAll('.category-item');
+
+// Event Listeners
+categorySearch.addEventListener('focus', () => {
+    showDropdown(categoryResults, categorySearch);
+    populateCategorySearchResults(categoryResults, categorySearch.value);
+});
+
+categorySearch.addEventListener('input', () => {
+    populateCategorySearchResults(categoryResults, categorySearch.value);
+});
+
+// Click outside to close dropdown
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-input')) {
+        categoryResults.classList.remove('show');
+    }
+});
+
+// Functions
+function showDropdown(dropdown, searchInput) {
+    dropdown.classList.add('show');
+    searchInput.value = '';
+}
+
+function populateCategorySearchResults(resultsElem, searchTerm = '') {
+    resultsElem.innerHTML = ''; // Clear previous results
+
+    // Filter categories based on search term
+    const filteredCategories = Array.from(categoryItems).filter(item => 
+        item.querySelector('.category-name').textContent.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Populate the dropdown with filtered categories
+    filteredCategories.forEach(item => {
+        const div = document.createElement('div');
+        div.classList.add('search-item');
+        div.textContent = item.querySelector('.category-name').textContent;
+        div.addEventListener('click', () => {
+            // Set the search bar value to the selected category name
+            categorySearch.value = item.querySelector('.category-name').textContent;
+
+            // Simulate a click on the category item
+            item.click();
+
+            // Hide dropdown after selection
+            categoryResults.classList.remove('show');
+
+            // Scroll to the selected category
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        resultsElem.appendChild(div);
+    });
+
+    if (filteredCategories.length === 0) {
+        const noResults = document.createElement('div');
+        noResults.classList.add('search-item');
+        noResults.textContent = 'No categories found';
+        resultsElem.appendChild(noResults);
+    }
+}
+        // Unit Converter Functionality
+        const units = {
+            density: [
+        { name: "Kilogram per cubic meter", symbol: "kg/m³", factor: 1 },
+        { name: "Gram per cubic centimeter", symbol: "g/cm³", factor: 1000 },
+        { name: "Kilogram per liter", symbol: "kg/L", factor: 1000 },
+        { name: "Pound per cubic foot", symbol: "lb/ft³", factor: 16.0184634 },
+        { name: "Pound per cubic inch", symbol: "lb/in³", factor: 27679.9047 },
+        { name: "Pound per gallon (US)", symbol: "lb/gal", factor: 119.8264273 },
+        { name: "Ounce per cubic inch", symbol: "oz/in³", factor: 1729.99405 }
+    ],
+    
+     
+    cookingMeasurements: [
+        { name: "Milliliter", symbol: "ml", factor: 1 },
+        { name: "Teaspoon (US)", symbol: "tsp", factor: 4.92892159 },
+        { name: "Tablespoon (US)", symbol: "tbsp", factor: 14.7867648 },
+        { name: "Fluid ounce (US)", symbol: "fl oz", factor: 29.5735296 },
+        { name: "Cup (US)", symbol: "cup", factor: 236.588237 },
+        { name: "Pint (US)", symbol: "pt", factor: 473.176473 },
+        { name: "Quart (US)", symbol: "qt", factor: 946.352946 },
+        { name: "Gallon (US)", symbol: "gal", factor: 3785.41178 },
+        { name: "Teaspoon (UK)", symbol: "tsp UK", factor: 5.91939 },
+        { name: "Tablespoon (UK)", symbol: "tbsp UK", factor: 17.7582 },
+        { name: "Fluid ounce (UK)", symbol: "fl oz UK", factor: 28.4131 },
+        { name: "Cup (UK)", symbol: "cup UK", factor: 284.131 },
+        { name: "Pint (UK)", symbol: "pt UK", factor: 568.261 },
+        { name: "Quart (UK)", symbol: "qt UK", factor: 1136.52 },
+        { name: "Gallon (UK)", symbol: "gal UK", factor: 4546.09 }
+    ],
+    
+    angle: [
+        { name: "Degree", symbol: "°", factor: 1 },
+        { name: "Radian", symbol: "rad", factor: 57.2957795131 },
+        { name: "Gradian", symbol: "grad", factor: 0.9 },
+        { name: "Turn", symbol: "turn", factor: 360 },
+        { name: "Minute of arc", symbol: "′", factor: 1/60 },
+        { name: "Second of arc", symbol: "″", factor: 1/3600 }
+    ],
+    
+               frequency: [
+        { name: "Hertz", symbol: "Hz", factor: 1 },
+        { name: "Kilohertz", symbol: "kHz", factor: 1000 },
+        { name: "Megahertz", symbol: "MHz", factor: 1000000 },
+        { name: "Gigahertz", symbol: "GHz", factor: 1000000000 },
+        { name: "Terahertz", symbol: "THz", factor: 1000000000000 },
+        { name: "Cycles per second", symbol: "cps", factor: 1 },
+        { name: "Revolutions per minute", symbol: "rpm", factor: 1/60 }
+    ],
+    
+    wavelength: [
+        { name: "Meter", symbol: "m", factor: 1 },
+        { name: "Centimeter", symbol: "cm", factor: 0.01 },
+        { name: "Millimeter", symbol: "mm", factor: 0.001 },
+        { name: "Micrometer", symbol: "μm", factor: 0.000001 },
+        { name: "Nanometer", symbol: "nm", factor: 0.000000001 },
+        { name: "Angstrom", symbol: "Å", factor: 0.0000000001 },
+        { name: "Picometer", symbol: "pm", factor: 0.000000000001 }
+    ],
+    
+    fuelEfficiency: [
+        { name: "Miles per gallon (US)", symbol: "mpg", factor: 1 },
+        { name: "Miles per gallon (UK)", symbol: "mpg UK", factor: 1.20095 },
+        { name: "Kilometers per liter", symbol: "km/L", factor: 0.425144 },
+        { name: "Liters per 100 kilometers", symbol: "L/100km", factor: 235.215 }, // Special case
+        { name: "Miles per liter", symbol: "mi/L", factor: 0.264172 }
+    ],
+    
+    radiation: [
+        { name: "Becquerel", symbol: "Bq", factor: 1 },
+        { name: "Kilobecquerel", symbol: "kBq", factor: 1000 },
+        { name: "Megabecquerel", symbol: "MBq", factor: 1000000 },
+        { name: "Gigabecquerel", symbol: "GBq", factor: 1000000000 },
+        { name: "Curie", symbol: "Ci", factor: 3.7e10 },
+        { name: "Millicurie", symbol: "mCi", factor: 3.7e7 },
+        { name: "Microcurie", symbol: "μCi", factor: 3.7e4 },
+        { name: "Sievert", symbol: "Sv", factor: 1 }, // Dose equivalent
+        { name: "Millisievert", symbol: "mSv", factor: 0.001 },
+        { name: "Microsievert", symbol: "μSv", factor: 0.000001 },
+        { name: "Rem", symbol: "rem", factor: 0.01 },
+        { name: "Gray", symbol: "Gy", factor: 1 }, // Absorbed dose
+        { name: "Milligray", symbol: "mGy", factor: 0.001 },
+        { name: "Rad", symbol: "rad", factor: 0.01 }
+    ],
+            length: [
+                { name: "Meter", symbol: "m", factor: 1 },
+                { name: "Kilometer", symbol: "km", factor: 1000 },
+                { name: "Centimeter", symbol: "cm", factor: 0.01 },
+                { name: "Millimeter", symbol: "mm", factor: 0.001 },
+                { name: "Inch", symbol: "in", factor: 0.0254 },
+                { name: "Foot", symbol: "ft", factor: 0.3048 },
+                { name: "Mile", symbol: "mi", factor: 1609.34 },
+                { name: "Yard", symbol: "yd", factor: 0.9144 }
+            ],
+            mass: [
+                { name: "Kilogram", symbol: "kg", factor: 1 },
+                { name: "Gram", symbol: "g", factor: 0.001 },
+                { name: "Milligram", symbol: "mg", factor: 0.000001 },
+                { name: "Pound", symbol: "lb", factor: 0.453592 },
+                { name: "Ounce", symbol: "oz", factor: 0.0283495 },
+                { name: "Ton", symbol: "t", factor: 1000 }
+            ],
+            temperature: [
+                { name: "Celsius", symbol: "°C", factor: 1 },
+                { name: "Fahrenheit", symbol: "°F", factor: 1 },
+                { name: "Kelvin", symbol: "K", factor: 1 }
+            ],
+            area: [
+                { name: "Square Meter", symbol: "m²", factor: 1 },
+                { name: "Square Kilometer", symbol: "km²", factor: 1000000 },
+                { name: "Square Centimeter", symbol: "cm²", factor: 0.0001 },
+                { name: "Square Millimeter", symbol: "mm²", factor: 0.000001 },
+                { name: "Hectare", symbol: "ha", factor: 10000 },
+                { name: "Acre", symbol: "ac", factor: 4046.86 },
+                { name: "Square Foot", symbol: "ft²", factor: 0.092903 },
+                { name: "Square Inch", symbol: "in²", factor: 0.00064516 }
+            ],
+            volume: [
+                { name: "Cubic Meter", symbol: "m³", factor: 1 },
+                { name: "Liter", symbol: "L", factor: 0.001 },
+                { name: "Milliliter", symbol: "mL", factor: 0.000001 },
+                { name: "Gallon (US)", symbol: "gal", factor: 0.00378541 },
+                { name: "Gallon (UK)", symbol: "gal (UK)", factor: 0.00454609 },
+                { name: "Cubic Centimeter", symbol: "cm³", factor: 0.000001 },
+                { name: "Cubic Inch", symbol: "in³", factor: 0.0000163871 },
+                { name: "Cubic Foot", symbol: "ft³", factor: 0.0283168 }
+            ],
+            digitalStorage: [
+        { name: "Bit", symbol: "b", factor: 1 },
+        { name: "Byte", symbol: "B", factor: 8 },
+        { name: "Kilobyte", symbol: "KB", factor: 8 * 1024 },
+        { name: "Megabyte", symbol: "MB", factor: 8 * 1024 * 1024 },
+        { name: "Gigabyte", symbol: "GB", factor: 8 * 1024 * 1024 * 1024 },
+        { name: "Terabyte", symbol: "TB", factor: 8 * 1024 * 1024 * 1024 * 1024 }
+    ],
+    time: [
+        { name: "Second", symbol: "s", factor: 1 },
+        { name: "Minute", symbol: "min", factor: 60 },
+        { name: "Hour", symbol: "hr", factor: 3600 },
+        { name: "Day", symbol: "day", factor: 86400 },
+        { name: "Week", symbol: "wk", factor: 604800 },
+        { name: "Month", symbol: "mo", factor: 2628000 }, // Approximate
+        { name: "Year", symbol: "yr", factor: 31536000 } // Approximate
+    ],
+    electricCurrent: [
+        { name: "Ampere", symbol: "A", factor: 1 },
+        { name: "Milliampere", symbol: "mA", factor: 0.001 },
+        { name: "Microampere", symbol: "µA", factor: 0.000001 },
+        { name: "Kiloampere", symbol: "kA", factor: 1000 }
+    ],
+    luminousIntensity: [
+        { name: "Candela", symbol: "cd", factor: 1 },
+        { name: "Millicandela", symbol: "mcd", factor: 0.001 },
+        { name: "Lumen per steradian", symbol: "lm/sr", factor: 1 }, // Same as candela
+        { name: "Candlepower", symbol: "cp", factor: 0.981 }, // Approximate conversion
+    ],
+    speed: [
+        { name: "Meter per second", symbol: "m/s", factor: 1 },
+        { name: "Kilometer per hour", symbol: "km/h", factor: 0.2777777778 }, // 1/3.6
+        { name: "Mile per hour", symbol: "mph", factor: 0.44704 },
+        { name: "Knot", symbol: "kn", factor: 0.5144444444 },
+        { name: "Foot per second", symbol: "ft/s", factor: 0.3048 },
+        { name: "Inch per second", symbol: "in/s", factor: 0.0254 },
+        { name: "Mach (at sea level)", symbol: "Mach", factor: 340.29 }
+    ],
+    acceleration: [
+        { name: "Meter per second squared", symbol: "m/s²", factor: 1 },
+        { name: "Foot per second squared", symbol: "ft/s²", factor: 0.3048 },
+        { name: "G-force", symbol: "g", factor: 9.80665 },
+        { name: "Inch per second squared", symbol: "in/s²", factor: 0.0254 },
+        { name: "Kilometer per hour per second", symbol: "km/h·s", factor: 0.2777777778 },
+        { name: "Gal", symbol: "Gal", factor: 0.01 }
+    ],
+    
+    force: [
+        { name: "Newton", symbol: "N", factor: 1 },
+        { name: "Kilonewton", symbol: "kN", factor: 1000 },
+        { name: "Pound-force", symbol: "lbf", factor: 4.4482216153 },
+        { name: "Kilogram-force", symbol: "kgf", factor: 9.80665 },
+        { name: "Dyne", symbol: "dyn", factor: 0.00001 },
+        { name: "Ounce-force", symbol: "ozf", factor: 0.2780139 }
+    ],
+    
+    pressure: [
+        { name: "Pascal", symbol: "Pa", factor: 1 },
+        { name: "Kilopascal", symbol: "kPa", factor: 1000 },
+        { name: "Bar", symbol: "bar", factor: 100000 },
+        { name: "Pound per square inch", symbol: "psi", factor: 6894.7572932 },
+        { name: "Millimeter of mercury", symbol: "mmHg", factor: 133.322387415 },
+        { name: "Inch of mercury", symbol: "inHg", factor: 3386.3886666 },
+        { name: "Atmosphere", symbol: "atm", factor: 101325 },
+        { name: "Torr", symbol: "Torr", factor: 133.3223684 }
+    ],
+    
+    energy: [
+        { name: "Joule", symbol: "J", factor: 1 },
+        { name: "Kilojoule", symbol: "kJ", factor: 1000 },
+        { name: "Calorie", symbol: "cal", factor: 4.184 },
+        { name: "Kilocalorie", symbol: "kcal", factor: 4184 },
+        { name: "Watt-hour", symbol: "Wh", factor: 3600 },
+        { name: "Kilowatt-hour", symbol: "kWh", factor: 3600000 },
+        { name: "Electronvolt", symbol: "eV", factor: 1.602176634e-19 },
+        { name: "British thermal unit", symbol: "BTU", factor: 1055.05585262 },
+        { name: "Foot-pound", symbol: "ft⋅lb", factor: 1.3558179483 }
+    ],
+    
+    power: [
+        { name: "Watt", symbol: "W", factor: 1 },
+        { name: "Kilowatt", symbol: "kW", factor: 1000 },
+        { name: "Megawatt", symbol: "MW", factor: 1000000 },
+        { name: "Horsepower (mechanical)", symbol: "hp", factor: 745.699872 },
+        { name: "Horsepower (metric)", symbol: "PS", factor: 735.49875 },
+        { name: "Foot-pound per second", symbol: "ft⋅lb/s", factor: 1.3558179483 },
+        { name: "BTU per hour", symbol: "BTU/h", factor: 0.29307107 }
+    ],
+    
+    torque: [
+        { name: "Newton-meter", symbol: "N⋅m", factor: 1 },
+        { name: "Foot-pound", symbol: "ft⋅lb", factor: 1.3558179483 },
+        { name: "Inch-pound", symbol: "in⋅lb", factor: 0.112984829 },
+        { name: "Kilogram-meter", symbol: "kg⋅m", factor: 9.80665 },
+        { name: "Inch-ounce", symbol: "in⋅oz", factor: 0.00706155 }
+    ]
+
+        };
+
+        // Category descriptions
+        const categoryDescriptions = {
+            length: "Convert between meters, feet, inches, miles and more",
+            mass: "Convert between kilograms, pounds, ounces and more",
+            temperature: "Convert between Celsius, Fahrenheit and Kelvin",
+            area: "Convert between square meters, acres, hectares and more",
+            volume: "Convert between cubic meters, liters, gallons and more",
+             digitalStorage: "Convert between bits, bytes, kilobytes, megabytes, gigabytes, and more",
+             time: "Convert between seconds, minutes, hours, days, weeks, months, and years",
+              electricCurrent: "Convert between amperes, milliamperes, microamperes, and kiloamperes",
+              luminousIntensity: "Convert between candela, millicandela, lumen per steradian, and candlepower",
+              speed: "Convert between meters per second, kilometers per hour, miles per hour, knots, and other speed units",
+              acceleration: "Convert between meters per second squared, feet per second squared, g-force, and other acceleration units",
+    force: "Convert between newtons, pound-force, kilogram-force, and other force units",
+    pressure: "Convert between pascals, bar, PSI, mmHg, and other pressure units",
+    energy: "Convert between joules, calories, kilowatt-hours, BTU, and other energy units",
+    power: "Convert between watts, horsepower, kilowatts, and other power units",
+    torque: "Convert between newton-meters, foot-pounds, and other torque units",
+    frequency: "Convert between hertz, kilohertz, megahertz, and other frequency units",
+    wavelength: "Convert between meters, nanometers, micrometers, angstroms, and other wavelength units",
+    fuelEfficiency: "Convert between miles per gallon, liters per 100 km, and other fuel efficiency units",
+    radiation: "Convert between becquerels, sieverts, grays, rads, and other radiation units",
+    density: "Convert between kg/m³, g/cm³, lb/ft³, and other density units",
+   
+    cookingMeasurements: "Convert between cups, tablespoons, teaspoons, milliliters, and other cooking measurements",
+    angle: "Convert between degrees, radians, gradians, and other angle units",
+
+
+
+
+        };
+
+        // Initialize variables
+        let currentCategory = "length";
+        let selectedFromUnit = units.length[0];
+        let selectedToUnit = units.length[1];
+
+        // DOM elements
+        const categoryItems = document.querySelectorAll('.category-item');
+        const conversionTitle = document.getElementById('conversion-title');
+        const conversionDescription = document.getElementById('conversion-description');
+        const fromUnitSearch = document.getElementById('fromUnitSearch');
+        const toUnitSearch = document.getElementById('toUnitSearch');
+        const fromUnitResults = document.getElementById('fromUnitResults');
+        const toUnitResults = document.getElementById('toUnitResults');
+        const selectedFromUnitElem = document.getElementById('selectedFromUnit');
+        const selectedToUnitElem = document.getElementById('selectedToUnit');
+        const convertBtn = document.getElementById('convert-btn');
+        
+        // Event Listeners
+        
+        // Category selection
+        categoryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all items
+                categoryItems.forEach(i => i.classList.remove('active'));
+                
+                // Add active class to clicked item
+                item.classList.add('active');
+                
+                // Update current category
+                currentCategory = item.dataset.category;
+                
+                // Update title and description
+                conversionTitle.textContent = `${currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1)} Conversion`;
+                conversionDescription.textContent = categoryDescriptions[currentCategory];
+                
+                // Update default units for this category
+                selectedFromUnit = units[currentCategory][0];
+                selectedToUnit = units[currentCategory][1];
+                
+                // Update displayed selected units
+                updateSelectedUnit('from', selectedFromUnit);
+                updateSelectedUnit('to', selectedToUnit);
+            });
+        });
+        
+        // Selected unit click handlers
+        selectedFromUnitElem.addEventListener('click', () => {
+            fromUnitSearch.focus();
+            showDropdown(fromUnitResults, fromUnitSearch);
+            populateSearchResults(fromUnitResults, currentCategory, 'from');
+        });
+        
+        selectedToUnitElem.addEventListener('click', () => {
+            toUnitSearch.focus();
+            showDropdown(toUnitResults, toUnitSearch);
+            populateSearchResults(toUnitResults, currentCategory, 'to');
+        });
+        
+        // Search focus handlers
+        fromUnitSearch.addEventListener('focus', () => {
+            showDropdown(fromUnitResults, fromUnitSearch);
+            populateSearchResults(fromUnitResults, currentCategory, 'from');
+        });
+        
+        toUnitSearch.addEventListener('focus', () => {
+            showDropdown(toUnitResults, toUnitSearch);
+            populateSearchResults(toUnitResults, currentCategory, 'to');
+        });
+        
+        // Search input handlers
+        fromUnitSearch.addEventListener('input', () => {
+            populateSearchResults(fromUnitResults, currentCategory, 'from', fromUnitSearch.value);
+        });
+        
+        toUnitSearch.addEventListener('input', () => {
+            populateSearchResults(toUnitResults, currentCategory, 'to', toUnitSearch.value);
+        });
+        
+        // Click outside to close dropdowns
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.input-group')) {
+                fromUnitResults.classList.remove('show');
+                toUnitResults.classList.remove('show');
+            }
+        });
+        
+        // Convert button
+        convertBtn.addEventListener('click', performConversion);
+        
+        // Functions
+        
+        function showDropdown(dropdown, searchInput) {
+            dropdown.classList.add('show');
+            searchInput.value = '';
+        }
+        
+                function populateSearchResults(resultsElem, category, type, searchTerm = '') {
+            const unitList = units[category];
+            resultsElem.innerHTML = ''; // Clear previous results
+
+            // Filter units based on search term
+            const filteredUnits = unitList.filter(unit => 
+                unit.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            // Populate the dropdown with filtered units
+            filteredUnits.forEach(unit => {
+                const div = document.createElement('div');
+                div.classList.add('search-item');
+                div.textContent = `${unit.name} (${unit.symbol})`;
+                div.addEventListener('click', () => {
+                    if (type === 'from') {
+                        selectedFromUnit = unit;
+                        updateSelectedUnit('from', unit);
+                    } else {
+                        selectedToUnit = unit;
+                        updateSelectedUnit('to', unit);
+                    }
+                    resultsElem.classList.remove('show'); // Hide dropdown after selection
+                });
+                resultsElem.appendChild(div);
+            });
+
+            if (filteredUnits.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.classList.add('search-item');
+                noResults.textContent = 'No units found';
+                resultsElem.appendChild(noResults);
+            }
+        }
+
+        function updateSelectedUnit(type, unit) {
+            const selectedUnitElem = type === 'from' ? selectedFromUnitElem : selectedToUnitElem;
+            selectedUnitElem.innerHTML = `
+                <span>${unit.name} (${unit.symbol})</span>
+                <i class="fas fa-chevron-down"></i>
+            `;
+        }
+
+        function performConversion() {
+    const inputValue = parseFloat(document.getElementById('inputValue').value);
+    if (isNaN(inputValue)) {
+        alert('Please enter a valid number');
+        return;
+    }
+
+    const fromUnit = selectedFromUnit;
+    const toUnit = selectedToUnit;
+    let result;
+
+    if (currentCategory === 'temperature') {
+        result = convertTemperature(inputValue, fromUnit.name, toUnit.name);
+    } else if (currentCategory === 'fuelEfficiency') {
+        result = convertFuelEfficiency(inputValue, fromUnit.name, toUnit.name);
+    } else {
+        result = (inputValue * fromUnit.factor) / toUnit.factor;
+    }
+
+    // Display the result in the conversion-container
+    const conversionResultElem = document.getElementById('conversion-result');
+    const conversionResultText = document.getElementById('conversion-result-text');
+    conversionResultText.textContent = `${inputValue} ${fromUnit.symbol} = ${result.toFixed(4)} ${toUnit.symbol}`;
+    conversionResultElem.classList.add('show');
+
+    // Also display the result in the results section
+    displayResult(inputValue, fromUnit, toUnit, result);
+}
+function updateSelectedUnit(type, unit) {
+    const selectedUnitElem = type === 'from' ? selectedFromUnitElem : selectedToUnitElem;
+    selectedUnitElem.innerHTML = `
+        <span>${unit.name} (${unit.symbol})</span>
+        <i class="fas fa-chevron-down"></i>
+    `;
+
+    // Hide the conversion result when a new unit is selected
+    const conversionResultElem = document.getElementById('conversion-result');
+    conversionResultElem.classList.remove('show');
+}
+        
+        function convertTemperature(value, fromUnit, toUnit) {
+            if (fromUnit === toUnit) return value;
+
+            // Convert to Celsius first
+            let celsius;
+            if (fromUnit === 'Celsius') {
+                celsius = value;
+            } else if (fromUnit === 'Fahrenheit') {
+                celsius = (value - 32) * (5 / 9);
+            } else if (fromUnit === 'Kelvin') {
+                celsius = value - 273.15;
+            }
+
+            // Convert from Celsius to target unit
+            if (toUnit === 'Celsius') {
+                return celsius;
+            } else if (toUnit === 'Fahrenheit') {
+                return (celsius * (9 / 5)) + 32;
+            } else if (toUnit === 'Kelvin') {
+                return celsius + 273.15;
+            }
+        }
+
+
+
+        function convertFuelEfficiency(value, fromUnit, toUnit) {
+    // Convert to L/100km (which is inverse of the other measures)
+    let l100km;
+
+    if (fromUnit === 'Liters per 100 kilometers') {
+        l100km = value;
+    } else if (fromUnit === 'Miles per gallon (US)') {
+        l100km = 235.215 / value;
+    } else if (fromUnit === 'Miles per gallon (UK)') {
+        l100km = 282.481 / value;
+    } else if (fromUnit === 'Kilometers per liter') {
+        l100km = 100 / value;
+    } else if (fromUnit === 'Miles per liter') {
+        l100km = 100 / (value * 1.60934);
+    }
+
+    // Convert from L/100km to target unit
+    if (toUnit === 'Liters per 100 kilometers') {
+        return l100km;
+    } else if (toUnit === 'Miles per gallon (US)') {
+        return 235.215 / l100km;
+    } else if (toUnit === 'Miles per gallon (UK)') {
+        return 282.481 / l100km;
+    } else if (toUnit === 'Kilometers per liter') {
+        return 100 / l100km;
+    } else if (toUnit === 'Miles per liter') {
+        return (100 / l100km) / 1.60934;
+    }
+}
+
+        function displayResult(inputValue, fromUnit, toUnit, result) {
+            const resultsContainer = document.getElementById('results-container');
+            const noResults = document.getElementById('no-results');
+            const clearAllBtn = document.getElementById('clear-all-btn');
+
+            // Hide "No results" message if it's the first result
+            if (noResults.style.display !== 'none') {
+                noResults.style.display = 'none';
+                clearAllBtn.style.display = 'block';
+            }
+
+            // Create result card
+            const resultCard = document.createElement('div');
+            resultCard.classList.add('result-card', `category-${currentCategory}`);
+            resultCard.innerHTML = `
+                <div class="result-header">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>${fromUnit.name} → ${toUnit.name}</span>
+                    <button class="delete-btn" onclick="deleteResult(this)"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="result-body">
+                    <div class="result-item">
+                        <span class="result-label">Input Value</span>
+                        <span class="result-value">${inputValue} ${fromUnit.symbol}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Converted Value</span>
+                        <span class="result-value">${result.toFixed(4)} ${toUnit.symbol}</span>
+                    </div>
+                </div>
+                <div class="result-final">
+                    ${inputValue} ${fromUnit.symbol} = ${result.toFixed(4)} ${toUnit.symbol}
+                </div>
+            `;
+
+            // Add result card to the container
+            resultsContainer.prepend(resultCard);
+        }
+
+        function deleteResult(button) {
+            const resultCard = button.closest('.result-card');
+            resultCard.remove();
+
+            // Show "No results" message if no cards are left
+            const resultsContainer = document.getElementById('results-container');
+            if (resultsContainer.children.length === 1) { // Only the "no-results" div remains
+                document.getElementById('no-results').style.display = 'block';
+                document.getElementById('clear-all-btn').style.display = 'none';
+            }
+        }
+
+        function clearAllResults() {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = `
+                <div class="no-results" id="no-results">No conversion results yet. Convert a value to see results here.</div>
+            `;
+            document.getElementById('clear-all-btn').style.display = 'none';
+        }
+
+
+
+
+
+
+
+
+
+        // Pagination for categories
+const prevCategoryBtn = document.getElementById('prev-category-btn');
+const nextCategoryBtn = document.getElementById('next-category-btn');
+// const categoryItems = document.querySelectorAll('.category-item');
+let currentPage = 1;
+const itemsPerPage = 5;
+
+// Function to show/hide categories based on the current page
+function updateCategoryVisibility() {
+    categoryItems.forEach((item, index) => {
+        if (index >= (currentPage - 1) * itemsPerPage && index < currentPage * itemsPerPage) {
+            item.style.display = 'flex'; // Show items for the current page
+        } else {
+            item.style.display = 'none'; // Hide other items
+        }
+    });
+
+    // Disable/enable icons based on the current page
+    prevCategoryBtn.style.opacity = currentPage === 1 ? '0.5' : '1';
+    prevCategoryBtn.style.pointerEvents = currentPage === 1 ? 'none' : 'auto';
+
+    nextCategoryBtn.style.opacity = currentPage * itemsPerPage >= categoryItems.length ? '0.5' : '1';
+    nextCategoryBtn.style.pointerEvents = currentPage * itemsPerPage >= categoryItems.length ? 'none' : 'auto';
+}
+
+// Initial visibility update
+updateCategoryVisibility();
+
+// Next button click handler
+nextCategoryBtn.addEventListener('click', () => {
+    const totalPages = Math.ceil(categoryItems.length / itemsPerPage);
+
+    if (currentPage < totalPages) {
+        currentPage++;
+        updateCategoryVisibility();
+    }
+});
+
+// Previous button click handler
+prevCategoryBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        updateCategoryVisibility();
+    }
+});
+
+// Function to send unit conversion data to the backend
+function storeUnitConversion(username, conversionType, fromUnit, toUnit, inputValue, convertedValue) {
+    fetch('/store_unit_conversion', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            conversion_type: conversionType,
+            from_unit: fromUnit,
+            to_unit: toUnit,
+            input_value: inputValue,
+            converted_value: convertedValue
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Unit conversion stored successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error storing unit conversion:', error);
+    });
+}
+
+// Modify the performConversion function to store the conversion data
+function performConversion() {
+    const inputValue = parseFloat(document.getElementById('inputValue').value);
+    if (isNaN(inputValue)) {
+        alert('Please enter a valid number');
+        return;
+    }
+
+    const fromUnit = selectedFromUnit;
+    const toUnit = selectedToUnit;
+    let result;
+
+    if (currentCategory === 'temperature') {
+        result = convertTemperature(inputValue, fromUnit.name, toUnit.name);
+    } else if (currentCategory === 'fuelEfficiency') {
+        result = convertFuelEfficiency(inputValue, fromUnit.name, toUnit.name);
+    } else {
+        result = (inputValue * fromUnit.factor) / toUnit.factor;
+    }
+
+    // Display the result in the conversion-container
+    const conversionResultElem = document.getElementById('conversion-result');
+    const conversionResultText = document.getElementById('conversion-result-text');
+    conversionResultText.textContent = `${inputValue} ${fromUnit.symbol} = ${result.toFixed(4)} ${toUnit.symbol}`;
+    conversionResultElem.classList.add('show');
+
+    // Also display the result in the results section
+    displayResult(inputValue, fromUnit, toUnit, result);
+
+    // Get the username from the user info (assuming it's stored in the user-info span)
+    const username = document.getElementById('user-info').textContent.replace('Hello, ', '').trim();
+
+    // Store the conversion data in the backend
+    storeUnitConversion(username, currentCategory, fromUnit.name, toUnit.name, inputValue, result);
+}
+
+
+    </script>
+</body>
+</html>
